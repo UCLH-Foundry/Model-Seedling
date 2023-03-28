@@ -1,0 +1,11 @@
+{
+    "input_folder": "model_monitoring",
+    "reference_file_name": "reference_data.csv",
+    "new_file_name": "new_data.csv",
+    "ground_truth_file_name": "new_data_groundtruth.csv",
+    "inference_file_name": "new_data_inference.csv",
+
+    "compute_target": "ayab-cpu-cluster",
+    "experiment_name": "data_drift_monitoring",
+    "perf_experiment_name": "model_performance_monitoring"
+}

@@ -1,6 +1,6 @@
 # basic FastAPI implementation
 from fastapi import FastAPI
-from model import entrypoint
+from serve import entrypoint
 from .about import generate_about_json
 
 app = FastAPI()

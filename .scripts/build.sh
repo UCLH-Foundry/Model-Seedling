@@ -1,3 +1,4 @@
+#!/bin/bash
 #  Copyright (c) University College London Hospitals NHS Foundation Trust
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +13,21 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import uvicorn
-from serve.internal import api
+set -o errexit
+set -o pipefail
+set -o nounset
 
-if __name__ == "__main__":
-    uvicorn.run(api.app, port=5000)
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ARCHITECTURE=$(uname -m)
+
+if [ "${ARCHITECTURE}" == "arm64" ]; then
+    DOCKER_BUILD_COMMAND="docker buildx build --platform linux/amd64"
+else
+    DOCKER_BUILD_COMMAND="docker build"
+fi
+
+echo "Building ${LOCAL_IMAGE_NAME} for amd64..."
+
+cd "${SCRIPT_DIR}/../app/"
+eval "${DOCKER_BUILD_COMMAND} -t ${LOCAL_IMAGE_NAME} ."
+cd -

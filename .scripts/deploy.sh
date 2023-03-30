@@ -1,3 +1,4 @@
+#!/bin/bash
 #  Copyright (c) University College London Hospitals NHS Foundation Trust
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +13,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import uvicorn
-from serve.internal import api
+set -o errexit
+set -o pipefail
+set -o nounset
 
-if __name__ == "__main__":
-    uvicorn.run(api.app, port=5000)
+if [ "${ENVIRONMENT}" = "local" ]; then
+    echo "Cannot deploy from local"
+    exit 1
+fi
+
+echo "Logging into an azure container registry"
+echo "${ACR_PASSWORD}" | docker login "${ACR_NAME}.azurecr.io" --username "${ACR_USERNAME}" --password-stdin
+docker tag "${LOCAL_IMAGE_NAME}" "${REMOTE_IMAGE_FULL_TAG}"
+
+echo "Pushing container: ${REMOTE_IMAGE_FULL_TAG}"
+docker push "${REMOTE_IMAGE_FULL_TAG}"

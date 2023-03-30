@@ -12,8 +12,21 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import uvicorn
-from serve.internal import api
+FROM python:3.10.10-bullseye
 
-if __name__ == "__main__":
-    uvicorn.run(api.app, port=5000)
+WORKDIR /endpoint
+
+COPY requirements.txt requirements.txt
+COPY ./ . 
+
+# Install the Python dependencies
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+# Create and use a non-root user
+RUN useradd -m appUser
+USER appUser
+
+# Serve the model
+CMD ["uvicorn", "serve.internal.api:app", "--host", "0.0.0.0", "--port", "5000"]

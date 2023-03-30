@@ -8,18 +8,13 @@ for training within AML.
 The intended end-user profile for this code is someone who may be competent with pandas/scikit-learn,
 but may not be comfortable modifying code outside of this framework.
 
-We have taken the boilerplate AML code and abstracted this away into discrete non-user files:
-* `main.py` = the user runs this when they are ready, but no code is modified here.
-* `config.json` = the AML config file
-* `src/aml_train` = this takes the user's model.py script and integrates with other AML code.
+We have taken the boilerplate AML code and abstracted this away into discrete non-user files (a `main.py` script and `config.json` / `user.json` files, all not shown here).
 
-The user will be instructed on how to modify, as required, the following files:
-* `src/model.py` = a dedicated file into which the user puts their model training script - exactly as they might run it on their own device.
-* `user.json` = the user's config file for various parameters like cpu-instance name, experiment-name, etc
-* `conda.yml` = the config file for the AML conda environment
+There are specific user-modifiable scripts linked to the model training process:
+* `src/preprocess.py` - a script that accepts a pandas DataFrame as input, and returns 2/4 numpy arrays (X_train, y_train, and option for X_test/y_test)
+* `src/model.py` - a script containing a function that accepts X/y numpy arrays (train and test) as input, and returns a trained model along with metrics.
 
-Currently, this code only runs using a pre-stored `.csv` file. As we progress with SQL/EMAP work in the TRE, the scope of the following two files should become clearer (user-modifiable vs non-user-modifiable):
-* `src/data_prep` = current script for loading in the .csv data
-* `src/data_versioning` = empty placeholder file, representing a potential script that pulls in EMAP data as a 'version'
-
-In its current format, the main.py script <i>should</i> run to completion, training an XGBoost classifier on the `spotlightearly.csv` data file.
+There are additional scripts which help to package up the above two scripts and communicate these to the AML interfacing scripts.
+* `src/create_data.py` - creates the pandas DataFrame, which will get processed by the `preprocess.py` script, and then save the resultant training/testing arrays
+* `src/data_versioning.py` - currently empty placeholder file, representing a potential script that will pull in EMAP data as a 'version'
+* `src/train.py` - loads the saved numpy train/test arrays, feeds them into the `src/model.py` script, and logs the metrics.

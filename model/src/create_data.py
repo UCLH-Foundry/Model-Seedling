@@ -1,7 +1,8 @@
 import os
 import argparse
 import pandas as pd
-from sklearn.model_selection import train_test_split
+import numpy as np
+from preprocess import preprocess_data
 import logging
 import mlflow
 
@@ -12,7 +13,6 @@ def main():
     # input and output arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=str, help="path to input data")
-    parser.add_argument("--test_train_ratio", type=float, required=False, default=0.25)
     parser.add_argument("--train_data", type=str, help="path to train data")
     parser.add_argument("--test_data", type=str, help="path to test data")
     args = parser.parse_args()
@@ -29,16 +29,15 @@ def main():
     mlflow.log_metric("num_samples", df.shape[0])
     mlflow.log_metric("num_features", df.shape[1] - 1)
 
-    train_df, test_df = train_test_split(
-        df,
-        test_size=args.test_train_ratio,
-    )
-
-    # output paths are mounted as folder, therefore, we are adding a filename to the path
-    train_df.to_csv(os.path.join(args.train_data, "data.csv"), index=False)
-
-    test_df.to_csv(os.path.join(args.test_data, "data.csv"), index=False)
-
+    # Preprocess data
+    X_train, y_train, X_test, y_test = preprocess_data(df)
+    
+    # Save the arrays
+    for path, names, arrs in [[args.train_data, ['train_data_X', 'train_data_y'], [X_train, y_train]],
+                              [args.test_data, ['test_data_X', 'test_data_y'], [X_test, y_test]]]:
+        for name, arr in zip(names, arrs):
+            np.save(os.path.join(path, name), arr)
+    
     # Stop Logging
     mlflow.end_run()
 

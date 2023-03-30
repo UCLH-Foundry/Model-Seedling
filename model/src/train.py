@@ -1,8 +1,7 @@
 import argparse
-from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, f1_score
 import os
-import pandas as pd
+import numpy as np
 import mlflow
 from model import train_model
 
@@ -32,18 +31,29 @@ your model-training script.
 
 def main():
 
-    def select_first_file(path):
+    def load_files(path):
         """
-        This function provides the path to the training or testing file.
-        NOTE: it assumes there is only one file in the folder (e.g., train.csv)
+        This function provides the path to the training or testing files.
+        It assumes the only files in the directory are the X and y arrays, in that order.
 
         Args:
             path (str): path to the parent directory
         Returns:
-            str: path to the training/testing file
+            X, y: two numpy arrays
         """
         files = os.listdir(path)
-        return os.path.join(path, files[0])
+        
+        arrays = {}
+        for file in files:
+            arr = np.load(os.path.join(path, file))
+            if 'X' in file:
+                arrays['X'] = arr
+            elif 'y' in file.replace('.npy', ''):
+                arrays['y'] = arr
+            else:
+                raise KeyError(f"Failure to load either the X or y arrays - Encountered file {file}.")
+        
+        return arrays['X'], arrays['y']
 
     # input and output arguments
     parser = argparse.ArgumentParser()
@@ -53,15 +63,9 @@ def main():
     parser.add_argument("--model", type=str, help="path to model file")
     args = parser.parse_args()
 
-    # Locate the training/testing data csvs and load into a DataFrame
-    train_df = pd.read_csv(select_first_file(args.train_data))
-    test_df = pd.read_csv(select_first_file(args.test_data))
-
-    # Convert the training and testing data into numpy arrays
-    y_train = train_df["dead7"].values
-    X_train = train_df.drop('dead7', axis=1).values
-    y_test = test_df['dead7'].values
-    X_test = test_df.drop('dead7', axis=1).values
+    # Locate the training/testing data
+    X_train, y_train = load_files(args.train_data)
+    X_test, y_test = load_files(args.test_data)
 
     print('Beginning training...')
     model, train_metrics, test_metrics = train_model(X_train, y_train, X_test, y_test)

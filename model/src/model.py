@@ -39,13 +39,13 @@ def train_model(X_train, y_train, X_test=None, y_test=None):
 
     # Evaluate the model
     y_train_pred = model.predict(X_train)
-    if X_test is not None:
+    if X_test != None:
         y_test_pred = model.predict(X_test)
 
     train_metrics = {'train_accuracy': accuracy_score(y_train, y_train_pred),
                      'train_roc_auc_score': roc_auc_score(y_train, y_train_pred)}
 
-    if X_test is not None:
+    if X_test != None:
         test_metrics = {'test_accuracy': accuracy_score(y_test, y_test_pred),
                         'test_roc_auc_score': roc_auc_score(y_test, y_test_pred)}
     else:

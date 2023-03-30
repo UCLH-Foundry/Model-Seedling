@@ -1,3 +1,13 @@
+# CHanges that needs to be made
+* look into running a cron job from AML
+* can an AML be triggered by an event?
+* how will data be ingested into Cosmos DB?
+* Replace the ground truth logo from cosmos DB to feature store
+* modify the scripts so that it will be clear which parts need to be modified by the data scientist (add functions and documentation)
+* naming convention for Azure monitor traces
+* add logic around the warning
+
+
 # Model Performance and Data Drift Monitoring
 
 ## Introduction

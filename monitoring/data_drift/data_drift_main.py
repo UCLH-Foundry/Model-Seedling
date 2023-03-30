@@ -17,7 +17,9 @@ def data_drift_pipeline(
     reference_data_path,
     new_data_path,
     mlflow_uri,
-    logger_connection_string
+    logger_connection_string,
+    model_name,
+    model_version,
 ):
     measure_data_drift_component = load_component(f"./data_drift/data_drift.yml")
 
@@ -25,7 +27,9 @@ def data_drift_pipeline(
     data_drift_job = measure_data_drift_component(reference_data_path=reference_data_path,
                                                 new_data_path=new_data_path,
                                                 mlflow_uri=mlflow_uri,
-                                                logger_connection_string=logger_connection_string)
+                                                logger_connection_string=logger_connection_string,
+                                                model_name=model_name,
+                                                model_version=model_version)
     
 
 def main():
@@ -36,6 +40,8 @@ def main():
     new_file_name = config["new_file_name"]
     experiment_name = config["experiment_name"]
     compute_target = config["compute_target"]
+    model_name = config["model_name"]
+    model_version = config["model_version"]
 
     ml_client = MLClient(
          DefaultAzureCredential(),
@@ -43,6 +49,7 @@ def main():
          resource_group_name=os.getenv("RESOURCE_GROUP"),
          workspace_name=os.getenv("AML_WORKSPACE_NAME"),
     )
+    
 
     
     print(ml_client.compute.get(compute_target))
@@ -76,7 +83,9 @@ def main():
     pipeline_job = data_drift_pipeline(reference_data_path=reference_data_path,
                                                 new_data_path=new_data_path,
                                                 mlflow_uri=mlflow_tracking_uri,
-                                                logger_connection_string=os.getenv("AZURE_LOG_HANDLER_CONNECTION_STRING"))
+                                                logger_connection_string=os.getenv("AZURE_LOG_HANDLER_CONNECTION_STRING"),
+                                                model_name = model_name,
+                                                model_version = model_version)
     
     pipeline_job.settings.default_compute=compute_target
     pipeline_job.settings.default_datastore="workspaceblobstore"

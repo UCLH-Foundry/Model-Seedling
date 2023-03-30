@@ -17,7 +17,10 @@ def model_performance_pipeline(
     inference_data_path,
     ground_truth_data_path,
     mlflow_uri,
-    logger_connection_string
+    logger_connection_string,
+    model_name,
+    model_version,
+    index_name
 ):
     measure_model_performance_component = load_component(f"./model_performance/model_performance.yml")
 
@@ -25,7 +28,11 @@ def model_performance_pipeline(
     model_performance_job = measure_model_performance_component(inference_data_path=inference_data_path,
                                                 groundtruth_data_path=ground_truth_data_path,
                                                 mlflow_uri=mlflow_uri,
-                                                logger_connection_string=logger_connection_string)
+                                                logger_connection_string=logger_connection_string,
+                                                model_name=model_name,
+                                                model_version=model_version,
+                                                index_name = index_name)
+
     
 
 def main():
@@ -36,6 +43,9 @@ def main():
     groundtruth_file_name = config["ground_truth_file_name"]
     experiment_name = config["perf_experiment_name"]
     compute_target = config["compute_target"]
+    model_name = config["model_name"]
+    model_version = config["model_version"]
+    index_name = config["index_name"]
 
     ml_client = MLClient(
          DefaultAzureCredential(),
@@ -76,7 +86,10 @@ def main():
     pipeline_job = model_performance_pipeline(inference_data_path=inference_data_path,
                                                 ground_truth_data_path=groundtruth_data_path,
                                                 mlflow_uri=mlflow_tracking_uri,
-                                                logger_connection_string=os.getenv("AZURE_LOG_HANDLER_CONNECTION_STRING"))
+                                                logger_connection_string=os.getenv("AZURE_LOG_HANDLER_CONNECTION_STRING"),
+                                                model_name=model_name,
+                                                model_version=model_version,
+                                                index_name=index_name)
     
     pipeline_job.settings.default_compute=compute_target
     pipeline_job.settings.default_datastore="workspaceblobstore"

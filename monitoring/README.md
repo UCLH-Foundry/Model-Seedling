@@ -18,7 +18,8 @@ The provided design assumes that the data are already stored in Azure Storage. T
 In the provided template, we assume the model will be using tabular data with ontinuous and categorical variables. 
 
 ## Requirements
-The solution requires that Azure ML and Azure Devops instances will be available in the production environment. 
+The solution requires that an Azure ML instance will be available in the production environment. 
+If the user chooses to trigger the pipelines using Azure DevOps or Github Actions (more on this later), these instances must be available in the production environment as well
 
 ## Before Deploying a Model
 When a model is ready to be pushed to production, it will be the data scientists' responsibility to provide the code required for monitoring, by altering the provided monitoring template (see the [Monitoring Template](#monitoring-template) section of this document for more details).

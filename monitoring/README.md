@@ -1,12 +1,3 @@
-# CHanges that needs to be made
-* look into running a cron job from AML
-* can an AML be triggered by an event?
-* how will data be ingested into Cosmos DB?
-* Replace the ground truth logo from cosmos DB to feature store
-* modify the scripts so that it will be clear which parts need to be modified by the data scientist (add functions and documentation)
-* naming convention for Azure monitor traces
-* add logic around the warning
-
 
 # Model Performance and Data Drift Monitoring
 
@@ -19,6 +10,9 @@ Data drift detection is an unsupervised task that involves comparing a sample of
 On the other hand, model performance monitoring is a supervised task that involves comparing the model's output to the ground truth. This task is useful in identifying changes in the model's behavior when the ground truth is available.
 
 It is important to note that maintaining a data drift detector even when the ground truth is available has two benefits. Firstly, it can detect changes earlier than relying solely on the ground truth. Secondly, it helps to understand the cause of model degradation even when the ground truth is available.
+
+## The Scope of this Document
+The provided design assumes that the data are already stored in Azure Storage. The processes of collecting data into or pulling the data from Cosmos DB or the feature store are not covered in this document.
 
 ## The Use Case
 In the provided template, we assume the model will be using tabular data with ontinuous and categorical variables. 

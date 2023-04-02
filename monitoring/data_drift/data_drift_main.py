@@ -96,7 +96,8 @@ def main():
     pipeline_job, experiment_name=experiment_name
     )
 
-    # Create a schedule - uncomment if not using Azure Pipelines or GitHub Actions
+    # Create a schedule - uncomment and modify 
+    # if not using Azure Pipelines or GitHub Actions
 
     # schedule_name = "data_drift_schedule"
 

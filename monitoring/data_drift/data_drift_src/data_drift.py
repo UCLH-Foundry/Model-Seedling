@@ -136,9 +136,7 @@ def gen_cont_metrics(reference_df,new_df,col):
 
 
 def main(args):
-    print("WE ARE HERE!!!   1")
-    print("ARGS: ", args.model_name)
-
+    
     logger = logging.getLogger(__name__)
     logger.addHandler(AzureLogHandler(connection_string=args.logger_connection_string))
 

@@ -41,8 +41,10 @@ The monitoring tool uses four data sources in order to run the pipelines:
 * UnlabledData: contains the new data that needs to be inferred by the model
 * TrainingSample: a sample of the training set (copied from the TRE) 
 
-### Azure Pipeline
+### Azure Pipeline (Optional)
 The Azure Pipelines will trigger the AML pipelines when new data becomes availabe, or on a predefined schedule. The Azure pipeline receives all the environment variables required to run Azure ML (such as subscription ID, client ID etc.)
+
+An alternative to the Azure Pipeline would be to schedule a recurring job directly from Azure ML (see [this](#monitoring-template) section for more details).
 
 ### Azure Machine Learning
 In Azure ML, we will have two pipelines - one for model performance monitoing and another one for drift detection.
@@ -68,6 +70,7 @@ In [Azure Monitor](https://learn.microsoft.com/en-us/azure/azure-monitor/overvie
 
 ## Monitoring Template
 The monitoring template is meant to help the data scientist create the artifacts required to run the monitoring workflow.
+There are two ways to run a recurring job in AML. The first one is byy linking the AML pipeline to Azure Pipelines (or Git actions), and the second one is by trigerring the recurrent job directly from AML. 
 To setup the workflow, the data scientist will need to follow the following steps:
 
 ### **Step 1: Define the drift and model performance metrics** 
@@ -75,9 +78,9 @@ In the `data_drift` and `model_performance` folders, edit the source code (e.g `
    * For data drift, the template supports running Kolmogorov-Smirnov algorithm for all continuous variables and Chi-squared tests for all categorical variables. 
 ### **Step 2: Configure the data paths and compute**
 Change the `config.json` file to point to the location of the data sources and to select the compute name (the assumption is that a compute has already been created in AML)
-### **Step 3: Create a client application** 
+### **Step 3 [Option 1]: Create a client application and configure Azure Devops** 
 In order for Azure Pipelines to trigger AML, you will need to [create a client application](https://learn.microsoft.com/en-us/azure/healthcare-apis/register-application-cli-rest) in Azure and add a client secret.
-### **Step 4: Configure Azure DevOps**
+Next, to configure Azure Devops:
 * Start a new [Azure DevOps](https://learn.microsoft.com/en-us/azure/devops/?view=azure-devops) project, connect it to the template repo
 , and create a new piplie using the `azure-pipelines.yml` yaml file (see [this link](https://learn.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline?view=azure-devops&tabs=java%2Ctfs-2018-2%2Cbrowser) for more details).
 * Link Azure DevOps to Azure [KeyVault](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/azure-key-vault?view=azure-devops&tabs=yaml) and define the following environment variables:
@@ -88,7 +91,10 @@ In order for Azure Pipelines to trigger AML, you will need to [create a client a
    * Resource_Group: the name of teh resource group 
    * Subscription_ID: the user's subscription ID
    * Tenant_ID: the [tenant ID](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant)
-### **Step 5: Run the pipeline**
+### **Step 3 [Option 2]: Configure a Recurring Job in AML**
+In the `data_drift_main.py` and `model_performance_main`, uncomment the block that generates a recurrent job. The jobs can be monitored and disabled in AML or using the SDK (see [here](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-schedule-pipeline-job?tabs=python) for more details on how to schedule and manage recurring jobs)
+
+### **Step 4: Run the pipeline**
 When the run completes, the artifacts will be stored in the AML run. 
 
 The logs that were saved to Azure Monitor are stored in the `traces` table. They can be queried using [Kusto Query Language (KQL)](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/) 

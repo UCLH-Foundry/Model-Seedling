@@ -6,6 +6,8 @@ from azure.ai.ml import load_component
 from azure.ai.ml.entities import Environment
 from azure.ai.ml import Input
 from azure.ai.ml import dsl, Input, Output
+from azure.ai.ml.entities import RecurrenceTrigger,JobSchedule
+from datetime import datetime
 import json
 import os
 
@@ -97,6 +99,23 @@ def main():
     pipeline_job = ml_client.jobs.create_or_update(
     pipeline_job, experiment_name=experiment_name
 )
+
+    # Create a schedule - uncomment if not using Azure Pipelines or GitHub Actions
+
+    # schedule_name = "model_performance_schedule"
+
+    # schedule_start_time = datetime.utcnow()
+    # recurrence_trigger = RecurrenceTrigger(
+    # frequency="minute",
+    # interval=10,
+    # )
+
+    # job_schedule = JobSchedule(
+    #     name=schedule_name, trigger=recurrence_trigger, create_job=pipeline_job
+    # )
+    # job_schedule = ml_client.schedules.begin_create_or_update(
+    #     schedule=job_schedule
+    # )
 
 if __name__ == '__main__':
     main()

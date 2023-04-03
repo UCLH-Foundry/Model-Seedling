@@ -23,7 +23,7 @@ def data_drift_pipeline(
     model_name,
     model_version,
 ):
-    measure_data_drift_component = load_component(f"./data_drift/data_drift.yml")
+    measure_data_drift_component = load_component("./data_drift/data_drift.yml")
 
     # using data_prep_function like a python call with its own inputs
     data_drift_job = measure_data_drift_component(reference_data_path=reference_data_path,

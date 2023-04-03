@@ -24,7 +24,7 @@ def model_performance_pipeline(
     model_version,
     index_name
 ):
-    measure_model_performance_component = load_component(f"./model_performance/model_performance.yml")
+    measure_model_performance_component = load_component("./model_performance/model_performance.yml")
 
     # using data_prep_function like a python call with its own inputs
     model_performance_job = measure_model_performance_component(inference_data_path=inference_data_path,

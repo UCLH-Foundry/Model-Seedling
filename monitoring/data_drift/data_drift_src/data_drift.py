@@ -195,8 +195,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name',type=str,required=True)
-    parser.add_argument('--reference_data_path', type=str,default='/Users/ayabellicha/Documents/model-monitoring-design/tabular-data/reference_data.csv')
-    parser.add_argument('--new_data_path', type=str,default='/Users/ayabellicha/Documents/model-monitoring-design/tabular-data/new_data.csv')
+    parser.add_argument('--reference_data_path', type=str)
+    parser.add_argument('--new_data_path', type=str)
     parser.add_argument('--mlflow_uri', type=str,default='.')
     parser.add_argument('--logger_connection_string', type=str,default='.')
     parser.add_argument('--model_version',type=str)

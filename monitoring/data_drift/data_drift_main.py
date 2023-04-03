@@ -44,22 +44,14 @@ def main():
     compute_target = config["compute_target"]
     model_name = config["model_name"]
     model_version = config["model_version"]
+    log_handler_connection_string = config["log_handler_connection_string"]
 
-    ml_client = MLClient(
+    ml_client = MLClient.from_config(
          DefaultAzureCredential(),
-         subscription_id=os.getenv("SUBSCRIPTION_ID"),
-         resource_group_name=os.getenv("RESOURCE_GROUP"),
-         workspace_name=os.getenv("AML_WORKSPACE_NAME"),
     )
     
-
-    
-    print(ml_client.compute.get(compute_target))
-
-    DEFAULT_DOCKER_BASE_IMAGE = 'mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04'
-
     env_docker_image = Environment(
-        image=DEFAULT_DOCKER_BASE_IMAGE,
+        image=config["docker_image"],
         name="data-drift-env",
         conda_file="./data_drift/env.yml",    
         )
@@ -67,7 +59,7 @@ def main():
     pipeline_job_env = ml_client.environments.create_or_update(env_docker_image)
 
 
-    data_store_prefix = "azureml://datastores/workspaceblobstore/paths"
+    data_store_prefix = config["datastore_path"]
     # Retrieve files from a remote location such as the Blob storage
     reference_data_path = Input(
         path=f"{data_store_prefix}/{input_folder}/{reference_file_name}", #this path needs to be adjusted to your datastore path
@@ -85,34 +77,33 @@ def main():
     pipeline_job = data_drift_pipeline(reference_data_path=reference_data_path,
                                                 new_data_path=new_data_path,
                                                 mlflow_uri=mlflow_tracking_uri,
-                                                logger_connection_string=os.getenv("AZURE_LOG_HANDLER_CONNECTION_STRING"),
+                                                logger_connection_string=log_handler_connection_string,
                                                 model_name = model_name,
                                                 model_version = model_version)
     
     pipeline_job.settings.default_compute=compute_target
-    pipeline_job.settings.default_datastore="workspaceblobstore"
+    #pipeline_job.settings.default_datastore="workspaceblobstore"
 
     pipeline_job = ml_client.jobs.create_or_update(
     pipeline_job, experiment_name=experiment_name
     )
 
-    # Create a schedule - uncomment and modify 
-    # if not using Azure Pipelines or GitHub Actions
+    # Create a schedule for the pipeline
 
-    # schedule_name = "data_drift_schedule"
+    schedule_name = "data_drift_schedule"
 
-    # schedule_start_time = datetime.utcnow()
-    # recurrence_trigger = RecurrenceTrigger(
-    # frequency="minute",
-    # interval=10,
-    # )
+    schedule_start_time = datetime.utcnow()
+    recurrence_trigger = RecurrenceTrigger(
+    frequency="minute",
+    interval=10,
+    )
 
-    # job_schedule = JobSchedule(
-    #     name=schedule_name, trigger=recurrence_trigger, create_job=pipeline_job
-    # )
-    # job_schedule = ml_client.schedules.begin_create_or_update(
-    #     schedule=job_schedule
-    # )
+    job_schedule = JobSchedule(
+        name=schedule_name, trigger=recurrence_trigger, create_job=pipeline_job
+    )
+    job_schedule = ml_client.schedules.begin_create_or_update(
+        schedule=job_schedule
+    )
 
 if __name__ == '__main__':
     main()

@@ -1,25 +1,14 @@
 
 # Model Performance and Data Drift Monitoring
 
-## Introduction
-
-Monitoring models in production is crucial to detecting model performance degradation early on and ensuring that the model's predictions remain reliable over time. Two ways to achieve this are data drift detection and model performance monitoring.
-
-Data drift detection is an unsupervised task that involves comparing a sample of the data the model was trained on to new data batches that are sent to the model for inferencing. This comparison helps to identify changes in the distribution of inputs, which may lead to a decline in the model's performance.
-
-On the other hand, model performance monitoring is a supervised task that involves comparing the model's output to the ground truth. This task is useful in identifying changes in the model's behavior when the ground truth is available.
-
-It is important to note that maintaining a data drift detector even when the ground truth is available has two benefits. Firstly, it can detect changes earlier than relying solely on the ground truth. Secondly, it helps to understand the cause of model degradation even when the ground truth is available.
-
 ## The Scope of this Document
 The provided design assumes that the data are already stored in Azure Storage. The processes of collecting data into or pulling the data from Cosmos DB or the feature store are not covered in this document.
 
 ## The Use Case
-In the provided template, we assume the model will be using tabular data with ontinuous and categorical variables. 
+In the provided template, we assume the model will be using tabular data with continuous and categorical variables. 
 
 ## Requirements
 The solution requires that an Azure ML instance will be available in the production environment. 
-If the user chooses to trigger the pipelines using Azure DevOps or Github Actions (more on this later), these instances must be available in the production environment as well
 
 ## Before Deploying a Model
 When a model is ready to be pushed to production, it will be the data scientists' responsibility to provide the code required for monitoring, by altering the provided monitoring template (see the [Monitoring Template](#monitoring-template) section of this document for more details).
@@ -30,19 +19,23 @@ The monitoring workflow is depicted in the image below. The document assumes tha
 !['flowchart'](assets/modelmonitoring.drawio.png)
 
 ### Data Sources
+The data used to run the template is stored in the [sample_data](./sample_data/) folder. The data is a small tabular set that contains both continuous and categorical features. the target variable is binary, and indicates whether the operation line needs to go through preventive maintenance. 
 The monitoring tool uses four data sources in order to run the pipelines:
 * GroundTruth: contains the actual labels of the inferred data. This data will only be available after providing the model's predictions, and will be used to evaluate the performance of teh model.
 * InferredData: contains the predictions made by the ML model
 * UnlabledData: contains the new data that needs to be inferred by the model
 * TrainingSample: a sample of the training set (copied from the TRE) 
 
-### Azure Pipeline (Optional)
-The Azure Pipelines will trigger the AML pipelines when new data becomes availabe, or on a predefined schedule. The Azure pipeline receives all the environment variables required to run Azure ML (such as subscription ID, client ID etc.)
-
-An alternative to the Azure Pipeline would be to schedule a recurring job directly from Azure ML (see [this](#monitoring-template) section for more details).
+In this template, we are working with tabular data that has both categorical and continuous features. A sample of the different data sources can be found in [here](./sample_data/). 
+[reference_data.csv](./sample_data/reference_data.csv) contains a sample of the training set
+[new_data.csv](./sample_data/new_data.csv) is a batch of new observations that are sent as inputs to the model for inference.
+[new_data_inference.csv](./sample_data/new_data_inference.csv) contains, for each id in the new data, the model's prediction as well as the probability.
+[new_data_groundtruth.csv](./sample_data/new_data_groundtruth.csv) contains, for each id in the new dataset, the actual "ground truth" label.
 
 ### Azure Machine Learning
 In Azure ML, we will have two pipelines - one for model performance monitoing and another one for drift detection.
+
+The pipelines will be triggered automatically to run at a predefined frequency. One can also choose to trigger the pipeline using Azure Piplines or Github Actions. The implementation of this approach is out of the scope of this document.
 
 #### *Model Performance Pipeline*
 Inputs: model predictions and their corresponding ground truths (when they become available)
@@ -52,9 +45,8 @@ The script will compute the model's performance by comparing the predictions tha
 Inputs: A sample of the training data, a set of new data
 Output: For each feature, the script will determine whether a data drift occurred or not. 
 
-In this example, we used the [alibi-detect](https://github.com/SeldonIO/alibi-detect) open source library to compute the data drift, but the data scientist can decide on the best monitoring tools based on the use case [^1]
-[^1]: For images, we could also use [Torchdrift](https://torchdrift.org/) or the[Deepchecks](https://deepchecks.com/) open source library
-
+In the provided template, we used the [alibi-detect](https://github.com/SeldonIO/alibi-detect) open source library to compute the data drift. However, the data scientist can decide on the best monitoring tools based on the use case [^1]
+[^1]: For example, when working with images, we could use [Torchdrift](https://torchdrift.org/) or the[Deepchecks](https://deepchecks.com/) open source library to detect the data drift
  
 If we would also like to support label drift, in addition to the training set, we will also need to save the predictions the model made on the training data so that we can compare the distribution of the predictions.
 
@@ -67,31 +59,19 @@ In [Azure Monitor](https://learn.microsoft.com/en-us/azure/azure-monitor/overvie
 The monitoring template is meant to help the data scientist create the artifacts required to run the monitoring workflow.
 There are two ways to run a recurring job in AML. The first one is byy linking the AML pipeline to Azure Pipelines (or Git actions), and the second one is by trigerring the recurrent job directly from AML. 
 To setup the workflow, the data scientist will need to follow the following steps:
-
-### **Step 1: Define the drift and model performance metrics** 
+### **Step 1: Upload the data to Azure Blob Storage**
+To run the template, make sure that the files stored in the [sample_data](./sample_data/) folder are uploaded to Azure blob storage in a folder named `model_monitoring`
+### **Step 2: Define the drift and model performance metrics** 
 In the `data_drift` and `model_performance` folders, edit the source code (e.g `data_drift/data_drift_src/data_drift.py`) to define the monitoring functions. 
    * For data drift, the template supports running Kolmogorov-Smirnov algorithm for all continuous variables and Chi-squared tests for all categorical variables. 
-### **Step 2: Configure the data paths and compute**
-Change the `config.json` file to point to the location of the data sources and to select the compute name (the assumption is that a compute has already been created in AML)
-### **Step 3 [Option 1]: Create a client application and configure Azure Devops** 
-In order for Azure Pipelines to trigger AML, you will need to [create a client application](https://learn.microsoft.com/en-us/azure/healthcare-apis/register-application-cli-rest) in Azure and add a client secret.
-Next, to configure Azure Devops:
-* Start a new [Azure DevOps](https://learn.microsoft.com/en-us/azure/devops/?view=azure-devops) project, connect it to the template repo
-, and create a new piplie using the `azure-pipelines.yml` yaml file (see [this link](https://learn.microsoft.com/en-us/azure/devops/pipelines/create-first-pipeline?view=azure-devops&tabs=java%2Ctfs-2018-2%2Cbrowser) for more details).
-* Link Azure DevOps to Azure [KeyVault](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/azure-key-vault?view=azure-devops&tabs=yaml) and define the following environment variables:
-   * Azure_Client_ID: the ID of the client appliaction
-   * AZURE_CLIENT_SECRET: the secret of the client application
-   * AZURE_LOG_HANDLER_CONNECTION_STRING: connection string used to log metrics to Azure Moniring (see [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=net) for more details)
-   * AzureML_Workspace_name: the name of the AML workspace where the experiments will be ran
-   * Resource_Group: the name of teh resource group 
-   * Subscription_ID: the user's subscription ID
-   * Tenant_ID: the [tenant ID](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant)
-### **Step 3 [Option 2]: Configure a Recurring Job in AML**
+### **Step 3: Configure AML and model parameters **
+Modify the `config.json` file to point to the location of the data sources and to select the compute name (the assumption is that a compute has already been created in AML).
+In order to connect to AML, you will also need to provide the subscription ID, resource group, workspace name and Azure Application Insight connection string.
+### **Step 4: Configure a Recurring Job in AML**
 In the `data_drift_main.py` and `model_performance_main`, uncomment the block that generates a recurrent job. The jobs can be monitored and disabled in AML or using the SDK (see [here](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-schedule-pipeline-job?tabs=python) for more details on how to schedule and manage recurring jobs)
-
-### **Step 4: Run the pipeline**
+### **Step 5: Run the pipeline**
 When the run completes, the artifacts will be stored in the AML run. 
-
+### ** Step 6: Model Monitoring**
 The logs that were saved to Azure Monitor are stored in the `traces` table. They can be queried using [Kusto Query Language (KQL)](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/) 
 
 For example, run the following query to detect if a drift has occurred:

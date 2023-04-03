@@ -44,7 +44,7 @@ def main(args):
     inference_data_path = args.inference_data_path
     groundtruth_data_path = args.groundtruth_data_path
     
-    df = read_data(read_data(inference_data_path,groundtruth_data_path,args.index_name))
+    df = read_data(inference_data_path,groundtruth_data_path,args.index_name)
     metrics = get_metrics(df)
     
     mlflow.log_metrics(metrics)

@@ -48,21 +48,15 @@ def main():
     model_name = config["model_name"]
     model_version = config["model_version"]
     index_name = config["index_name"]
+    log_handler_connection_string = config["log_handler_connection_string"]
 
-    ml_client = MLClient(
+
+    ml_client = MLClient.from_config(
          DefaultAzureCredential(),
-         subscription_id=os.getenv("SUBSCRIPTION_ID"),
-         resource_group_name=os.getenv("RESOURCE_GROUP"),
-         workspace_name=os.getenv("AML_WORKSPACE_NAME"),
     )
 
-    
-    print(ml_client.compute.get(compute_target))
-
-    DEFAULT_DOCKER_BASE_IMAGE = 'mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04'
-
     env_docker_image = Environment(
-        image=DEFAULT_DOCKER_BASE_IMAGE,
+        image=config["docker_image"],
         name="model-performance-env",
         conda_file="./model_performance/env.yml",    
         )
@@ -70,7 +64,7 @@ def main():
     pipeline_job_env = ml_client.environments.create_or_update(env_docker_image)
 
 
-    data_store_prefix = "azureml://datastores/workspaceblobstore/paths"
+    data_store_prefix = config["datastore_path"]
     # Retrieve files from a remote location such as the Blob storage
     inference_data_path = Input(
         path=f"{data_store_prefix}/{input_folder}/{inference_file_name}", #this path needs to be adjusted to your datastore path
@@ -88,13 +82,13 @@ def main():
     pipeline_job = model_performance_pipeline(inference_data_path=inference_data_path,
                                                 ground_truth_data_path=groundtruth_data_path,
                                                 mlflow_uri=mlflow_tracking_uri,
-                                                logger_connection_string=os.getenv("AZURE_LOG_HANDLER_CONNECTION_STRING"),
+                                                logger_connection_string=log_handler_connection_string,
                                                 model_name=model_name,
                                                 model_version=model_version,
                                                 index_name=index_name)
     
     pipeline_job.settings.default_compute=compute_target
-    pipeline_job.settings.default_datastore="workspaceblobstore"
+    #pipeline_job.settings.default_datastore="workspaceblobstore"
 
     pipeline_job = ml_client.jobs.create_or_update(
     pipeline_job, experiment_name=experiment_name

@@ -1,4 +1,12 @@
 {
+    "subscription_id": <SUBSCRIPTION_ID>,
+    "resource_group": <RESOURCE_GROUP>,
+    "workspace_name": <WORKSPACE_NAME>,
+    "log_handler_connection_string": <CONNECTION_STRING>
+
+    "docker_image": "mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest",
+
+    "datastore_path": "azureml://datastores/workspaceblobstore/paths",
     "input_folder": "model_monitoring",
     "reference_file_name": "reference_data.csv",
     "new_file_name": "new_data.csv",
@@ -8,10 +16,10 @@
     "model_name": "maintenance_model",
     "model_version": "1",
 
-    "compute_target": "cpu-cluster",
+    "compute_target": "ayab-cpu-cluster",
     "experiment_name": "data_drift_monitoring",
     "perf_experiment_name": "model_performance_monitoring",
 
-    "index_name": "Unnamed: 0"
+    "index_name": "id"
 
 }

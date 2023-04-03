@@ -63,7 +63,10 @@ To setup the workflow, the data scientist will need to follow the following step
 To run the template, make sure that the files stored in the [sample_data](./sample_data/) folder are uploaded to Azure blob storage in a folder named `model_monitoring`
 ### **Step 2: Define the drift and model performance metrics** 
 In the `data_drift` and `model_performance` folders, edit the source code (e.g `data_drift/data_drift_src/data_drift.py`) to define the monitoring functions. 
-   * For data drift, the template supports running Kolmogorov-Smirnov algorithm for all continuous variables and Chi-squared tests for all categorical variables. 
+   * For data drift, the template supports running Kolmogorov-Smirnov algorithm for all continuous variables and Chi-squared tests for all categorical variables.
+
+If the drift or performance metrcs were measured using a library that is not in the `env.yml` file, make sure to add it there.
+ 
 ### **Step 3: Configure AML and model parameters **
 Modify the `config.json` file to point to the location of the data sources and to select the compute name (the assumption is that a compute has already been created in AML).
 In order to connect to AML, you will also need to provide the subscription ID, resource group, workspace name and Azure Application Insight connection string.

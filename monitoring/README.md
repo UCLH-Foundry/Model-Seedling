@@ -83,13 +83,3 @@ These queries can be used to [create alerts](https://learn.microsoft.com/en-us/a
 * When to trigger the pipelined -  
   * whenever there is a change in Cosmos DB datasets
   * at pre-defined intervals
-
-
-
-
-
-
-
-
-
-

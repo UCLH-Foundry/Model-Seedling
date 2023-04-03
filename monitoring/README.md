@@ -4,9 +4,6 @@
 ## The Scope of this Document
 The provided design assumes that the data are already stored in Azure Storage. The processes of collecting data into or pulling the data from Cosmos DB or the feature store are not covered in this document.
 
-## The Use Case
-In the provided template, we assume the model will be using tabular data with continuous and categorical variables. 
-
 ## Requirements
 The solution requires that an Azure ML instance will be available in the production environment. 
 
@@ -19,18 +16,13 @@ The monitoring workflow is depicted in the image below. The document assumes tha
 !['flowchart'](assets/modelmonitoring.drawio.png)
 
 ### Data Sources
-The data used to run the template is stored in the [sample_data](./sample_data/) folder. The data is a small tabular set that contains both continuous and categorical features. the target variable is binary, and indicates whether the operation line needs to go through preventive maintenance. 
-The monitoring tool uses four data sources in order to run the pipelines:
-* GroundTruth: contains the actual labels of the inferred data. This data will only be available after providing the model's predictions, and will be used to evaluate the performance of teh model.
-* InferredData: contains the predictions made by the ML model
-* UnlabledData: contains the new data that needs to be inferred by the model
-* TrainingSample: a sample of the training set (copied from the TRE) 
+The data used to run this template are stored in the [sample_data](./sample_data/) folder. The data are a small tabular set that contain both continuous and categorical features. the target variable is binary, and indicates whether the operation line needs to go through preventive maintenance. 
 
-In this template, we are working with tabular data that has both categorical and continuous features. A sample of the different data sources can be found in [here](./sample_data/). 
-[reference_data.csv](./sample_data/reference_data.csv) contains a sample of the training set
-[new_data.csv](./sample_data/new_data.csv) is a batch of new observations that are sent as inputs to the model for inference.
-[new_data_inference.csv](./sample_data/new_data_inference.csv) contains, for each id in the new data, the model's prediction as well as the probability.
-[new_data_groundtruth.csv](./sample_data/new_data_groundtruth.csv) contains, for each id in the new dataset, the actual "ground truth" label.
+The monitoring tool uses four data sources in order to run the pipelines:
+* GroundTruth ([new_data_groundtruth.csv](./sample_data/new_data_groundtruth.csv)): contains the actual labels of the inferred data. This data will only be available after providing the model's predictions, and will be used to evaluate the performance of teh model.
+* UnlabledData ([new_data.csv](./sample_data/new_data.csv)): contains the new data that are sent to the ML model for inference.
+* InferredData ([new_data_inference.csv](./sample_data/new_data_inference.csv)): contains, for each id in the new data set, the predictions made by the ML model
+* TrainingSample ([reference_data.csv](./sample_data/reference_data.csv)): a sample of the training set (copied from the TRE) 
 
 ### Azure Machine Learning
 In Azure ML, we will have two pipelines - one for model performance monitoing and another one for drift detection.
@@ -66,15 +58,15 @@ In the `data_drift` and `model_performance` folders, edit the source code (e.g `
    * For data drift, the template supports running Kolmogorov-Smirnov algorithm for all continuous variables and Chi-squared tests for all categorical variables.
 
 If the drift or performance metrcs were measured using a library that is not in the `env.yml` file, make sure to add it there.
- 
-### **Step 3: Configure AML and model parameters **
+
+### **Step 3: Configure AML and model parameters**
 Modify the `config.json` file to point to the location of the data sources and to select the compute name (the assumption is that a compute has already been created in AML).
 In order to connect to AML, you will also need to provide the subscription ID, resource group, workspace name and Azure Application Insight connection string.
 ### **Step 4: Configure a Recurring Job in AML**
 In the `data_drift_main.py` and `model_performance_main`, uncomment the block that generates a recurrent job. The jobs can be monitored and disabled in AML or using the SDK (see [here](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-schedule-pipeline-job?tabs=python) for more details on how to schedule and manage recurring jobs)
 ### **Step 5: Run the pipeline**
 When the run completes, the artifacts will be stored in the AML run. 
-### ** Step 6: Model Monitoring**
+### **Step 6: Model Monitoring**
 The logs that were saved to Azure Monitor are stored in the `traces` table. They can be queried using [Kusto Query Language (KQL)](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/) 
 
 For example, run the following query to detect if a drift has occurred:

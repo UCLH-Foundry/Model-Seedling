@@ -77,7 +77,7 @@ def main():
     )
 
     mlflow_tracking_uri = ml_client.workspaces.get(ml_client.workspace_name).mlflow_tracking_uri
-    #measure_data_drift_component = load_component(f"data_drift.yml")
+    
 
     pipeline_job = model_performance_pipeline(inference_data_path=inference_data_path,
                                                 ground_truth_data_path=groundtruth_data_path,
@@ -88,14 +88,13 @@ def main():
                                                 index_name=index_name)
     
     pipeline_job.settings.default_compute=compute_target
-    #pipeline_job.settings.default_datastore="workspaceblobstore"
+    
 
     pipeline_job = ml_client.jobs.create_or_update(
     pipeline_job, experiment_name=experiment_name
 )
 
     # Create a schedule for the job
-    if not using Azure Pipelines or GitHub Actions
 
     schedule_name = "model_performance_schedule"
 

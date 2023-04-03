@@ -8,7 +8,7 @@
     "model_name": "maintenance_model",
     "model_version": "1",
 
-    "compute_target": "ayab-cpu-cluster",
+    "compute_target": "cpu-cluster",
     "experiment_name": "data_drift_monitoring",
     "perf_experiment_name": "model_performance_monitoring",
 

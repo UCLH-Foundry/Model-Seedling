@@ -68,7 +68,6 @@ def main():
     )
 
     mlflow_tracking_uri = ml_client.workspaces.get(ml_client.workspace_name).mlflow_tracking_uri
-    #measure_data_drift_component = load_component(f"data_drift.yml")
 
     pipeline_job = data_drift_pipeline(reference_data_path=reference_data_path,
                                                 new_data_path=new_data_path,
@@ -78,7 +77,6 @@ def main():
                                                 model_version = model_version)
     
     pipeline_job.settings.default_compute=compute_target
-    #pipeline_job.settings.default_datastore="workspaceblobstore"
 
     pipeline_job = ml_client.jobs.create_or_update(
     pipeline_job, experiment_name=experiment_name

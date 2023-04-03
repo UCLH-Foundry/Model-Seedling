@@ -1,15 +1,11 @@
-import argparse
-from azure.identity import DefaultAzureCredential, InteractiveBrowserCredential
+from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient, Input
-from azure.ai.ml.dsl import pipeline
 from azure.ai.ml import load_component
 from azure.ai.ml.entities import Environment
-from azure.ai.ml import Input
-from azure.ai.ml import dsl, Input, Output
+from azure.ai.ml import dsl
 from azure.ai.ml.entities import RecurrenceTrigger,JobSchedule
 from datetime import datetime
 import json
-import os
 
 with open("./config.json") as f:
         config = json.load(f)

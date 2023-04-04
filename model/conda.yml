@@ -15,7 +15,5 @@ dependencies:
       - xlrd
       - mlflow
       - xlrd
-      - mlflow
       - azureml-mlflow==1.42.0
-      - polars
       - xgboost

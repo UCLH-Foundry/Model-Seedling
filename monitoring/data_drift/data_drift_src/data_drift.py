@@ -155,7 +155,7 @@ def main(args):
 
     severity_level = compute_severity_level(drift_pred)
     properties = {'custom_dimensions': {'is_drift': is_drift,'severity':severity_level,'run_id':run_id }}
-    logger.warning(f'{args.model_name}_data_drift_total', extra=properties)
+    logger.info(f'{args.model_name}_data_drift_total', extra=properties)
 
     heatmap_fig = pval_heatmap(reference_df.columns,drift_pred['p_val'])
     mlflow.log_figure(heatmap_fig, f'pvalues_summary.png')
@@ -187,9 +187,7 @@ def main(args):
             feature_metrics = gen_cont_metrics(reference_df,new_df,col)
         properties['custom_dimensions'].update(feature_metrics)
 
-            
-
-        logger.warning(f'{args.model_name}_data_drift_features', extra=properties)
+        logger.info(f'{args.model_name}_data_drift_features', extra=properties)
 
 if __name__ == '__main__':
 

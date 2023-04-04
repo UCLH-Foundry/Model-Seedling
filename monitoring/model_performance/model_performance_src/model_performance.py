@@ -51,9 +51,9 @@ def main(args):
     metrics['run_id'] = run_id
 
     properties = {'custom_dimensions': metrics}
-    logger.warning(f'{args.model_name}_model_performance', extra=properties)
+    logger.info(f'{args.model_name}_model_performance', extra=properties)
 
-   
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', type=str,required=True)

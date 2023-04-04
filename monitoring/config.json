@@ -1,8 +1,8 @@
 {
-    "subscription_id": <SUBSCRIPTION_ID>,
-    "resource_group": <RESOURCE_GROUP>,
-    "workspace_name": <WORKSPACE_NAME>,
-    "log_handler_connection_string": <CONNECTION_STRING>
+    "subscription_id": "<CHANGE_ME_SUBSCRIPTION_ID>",
+    "resource_group": "<CHANGE_ME_RESOURCE_GROUP>",
+    "workspace_name": "<CHANGE_ME_WORKSPACE_NAME>",
+    "log_handler_connection_string": "<CHANGE_ME_CONNECTION_STRING>",
 
     "docker_image": "mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest",
 
@@ -21,5 +21,4 @@
     "perf_experiment_name": "model_performance_monitoring",
 
     "index_name": "id"
-
 }

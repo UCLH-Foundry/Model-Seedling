@@ -42,6 +42,8 @@ async def initialize_logging_on_startup():
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next) -> Response:
+    
+    # picks up APPLICATIONINSIGHTS_CONNECTION_STRING automatically
     tracer = Tracer(exporter=AzureExporter(sampler=ProbabilitySampler(1.0)))
     with tracer.span("main") as span:
         span.span_kind = SpanKind.SERVER

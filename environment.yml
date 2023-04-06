@@ -442,5 +442,4 @@ dependencies:
     - uvicorn==0.21.1
     - wheel==0.38.4
     - opencensus-ext-azure==1.1.9
-    - opencensus-ext-logging==0.1.1
 prefix: /opt/conda

@@ -12,16 +12,27 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import logging
 from fastapi import FastAPI
 from serve import entrypoint
 from .about import generate_about_json
+from .azure_logging import initialize_logging
 
+# create fastapi app
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def initialize_logging_on_startup():
+    initialize_logging(logging.DEBUG)
 
 @app.get("/")
 def root():
+    logging.info("Root endpoint called")
     return generate_about_json()
+
 
 @app.get("/run")
 def run(rawdata: dict = None):
+    logging.info("Run endpoint called")
     return entrypoint.run(rawdata)

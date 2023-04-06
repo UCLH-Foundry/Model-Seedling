@@ -14,7 +14,6 @@
 
 import logging
 from fastapi import FastAPI
-from opencensus.trace.attributes_helper import COMMON_ATTRIBUTES
 
 from serve import entrypoint
 from .about import generate_about_json

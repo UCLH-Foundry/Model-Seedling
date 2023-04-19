@@ -1,0 +1,15 @@
+{
+    "subscription_id": "<CHANGE_ME_SUBSCRIPTION_ID>",
+    "resource_group": "<CHANGE_ME_RESOURCE_GROUP>",
+    "workspace_name": "<CHANGE_ME_WORKSPACE_NAME>",
+    
+    "model_name": "<CHANGE_ME_MODEL_NAME>",
+    "model_version": "<CHANGE_ME_MODEL_VERSION>",
+    
+    "dataset_name": "<CHANGE_ME_DATASET_NAME>",
+    "dataset_version": "<CHANGE_ME_DATASET_VERSION>",
+    
+    "registry_name": "<CHANGE_ME_REGISTRY_NAME>",
+    "registry_location": "<CHANGE_ME_REGISTRY_LOCATION>"
+
+}

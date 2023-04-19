@@ -21,13 +21,13 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ARCHITECTURE=$(uname -m)
 
 if [ "${ARCHITECTURE}" == "arm64" ]; then
-    DOCKER_BUILD_COMMAND="docker buildx build --platform linux/amd64"
+    DOCKER_BUILD_COMMAND="docker buildx build --file Dockerfile.serve --platform linux/amd64"
 else
-    DOCKER_BUILD_COMMAND="docker build"
+    DOCKER_BUILD_COMMAND="docker build --file Dockerfile.serve"
 fi
 
 echo "Building ${LOCAL_IMAGE_NAME} for amd64..."
 
-cd "${SCRIPT_DIR}/../app/"
+cd "${SCRIPT_DIR}/.."
 eval "${DOCKER_BUILD_COMMAND} -t ${LOCAL_IMAGE_NAME} ."
 cd -

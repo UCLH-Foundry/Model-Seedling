@@ -13,8 +13,6 @@ It is important to note that the AML registry is immutable
 pip install -r dev_requirements.txt
 ```
 * Make sure the following resources are available:
-  * An AML workspace
-  * An [AML Registry](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-registries?view=azureml-api-2&tabs=studio)
   * A model registered in the local workspace
   * A dataset registered as an AML dataset
 

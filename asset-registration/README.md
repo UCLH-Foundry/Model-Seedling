@@ -5,6 +5,8 @@
 Each team developing a model works in isolation in their own TRE workspace, with their own AML instance. Once the team is happy with the model they've built and would like to progress the trained model from the TRE into a shared space that can be used in production, they will run a script that will create a copy of the model and dataset in a shared AML registry.
 The shared registry will then be accessed from the production environment to pull the model and dataset into the workspace or for model deployment.
 
+It is important to note that the AML registry is immutable
+
 ## Setup
 * Install the requirements
 ```
@@ -24,3 +26,26 @@ Note that the AML registry won't allow asset overwrite, so the data scientist ne
 
 After editing the `config.json` file, run the script to register the model and dataset.
 
+## Downloading the model from the registry
+
+In order to download the model for deployment, you would need to link to the AML registry and fetch the model from there. That could be done using the following piece of python code:
+
+```python
+from azure.identity import DefaultAzureCredential
+from azure.ai.ml import MLClient
+
+registry_name = "<CHANGE_ME_REGISTRY_NAME>"
+model_name = "<CHANGE_ME_MODEL_NAME>"
+model_version = "<CHANGE_ME_MODEL_VERSION>"
+
+credential = DefaultAzureCredential()
+ml_client_registry = MLClient(credential=credential, registry_name=registry_name)
+
+train_component_from_registry = ml_client_registry.models.download(
+    name=model_name, version=model_version
+)
+
+
+```
+
+That will create a local folder containing all of the model's artifacts. 

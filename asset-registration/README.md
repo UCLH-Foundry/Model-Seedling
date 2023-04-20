@@ -48,4 +48,17 @@ train_component_from_registry = ml_client_registry.models.download(
 
 ```
 
-That will create a local folder containing all of the model's artifacts. 
+That will create a local folder containing all of the model's artifacts. Similarly, to pull a dataset from the registry, run
+
+```python
+
+dataset_name = "<CHANGE_ME_DATASET_NAME>"
+dataset_version = "<CHANGE_ME_DATASET_VERSION>"
+dataset = ml_client_registry.data.download(name=dataset_name, version=dataset_version)
+
+# or, if you would like to get a reference to the dataset and not download it (for example, if you would like the dataset to be used as an input for an AML job) run this command instead:
+
+#dataset = ml_client_registry.data.get(name=dataset_name, version=dataset_version)
+
+```
+

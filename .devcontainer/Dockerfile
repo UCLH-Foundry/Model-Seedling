@@ -7,12 +7,12 @@ RUN if [ -f "/tmp/conda-tmp/environment.yml" ]; then umask 0002 && /opt/conda/bi
     && rm -rf /tmp/conda-tmp
 
 # Install additional OS packages.
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends curl gnupg lsb-release bash-completion \
-    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+#     && apt-get -y install --no-install-recommends curl gnupg lsb-release bash-completion \
+#     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Install AzCopy
-RUN curl -L --fail -o /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopy-v10-linux" \
-  && tar -xvzf /tmp/azcopy.tar.gz -C /tmp \
-  && cp /tmp/azcopy_linux_amd64_*/azcopy /usr/local/bin/azcopy \
-  && chmod +x /usr/local/bin/azcopy
+# # Install AzCopy
+# RUN curl -L --fail -o /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopy-v10-linux" \
+#   && tar -xvzf /tmp/azcopy.tar.gz -C /tmp \
+#   && cp /tmp/azcopy_linux_amd64_*/azcopy /usr/local/bin/azcopy \
+#   && chmod +x /usr/local/bin/azcopy

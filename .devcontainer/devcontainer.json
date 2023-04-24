@@ -6,7 +6,13 @@
 		"context": "..",
 		"dockerfile": "Dockerfile"
 	},
-	"features": {
+	"mounts": [
+		"type=bind,source=/etc/pip.conf,target=/etc/pip.conf" // mount the pip.conf from the VM to get the nexus config
+	],
+	// commented out below features as no access to ghcr.io
+	// options - if needed - are to prebuild the DC with features baken in, and stash it in a private ACR, or 
+	// push the OCI artefacts into a private ACR and reference them as features here.
+	/*"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {
 			"version": "latest"
 		},
@@ -17,16 +23,13 @@
 			"version": "latest",
 			"dockerDashComposeVersion": "v1"
 		}
-	}
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	},*/
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "python --version",
+	"postCreateCommand": "pip install -r requirements.txt"
 
 	// Configure tool-specific properties.
 	// "customizations": {},

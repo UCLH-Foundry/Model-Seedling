@@ -5,7 +5,7 @@
 Each team developing a model works in isolation in their own TRE workspace, with their own AML instance. Once the team is happy with the model they've built and would like to progress the trained model from the TRE into a shared space that can be used in production, they will run a script that will create a copy of the model and dataset in a shared AML registry.
 The shared registry will then be accessed from the production environment to pull the model and dataset into the workspace or for model deployment.
 
-It is important to note that the AML registry is immutable
+The AML registry is immutable and models can not be overwritten. Therefore, it would be the data scientists responsibility to create new version to each asset they would like to register.
 
 ## Setup
 * Install the requirements
@@ -53,10 +53,11 @@ That will create a local folder containing all of the model's artifacts. Similar
 dataset_name = "<CHANGE_ME_DATASET_NAME>"
 dataset_version = "<CHANGE_ME_DATASET_VERSION>"
 dataset = ml_client_registry.data.download(name=dataset_name, version=dataset_version)
+```
 
-# or, if you would like to get a reference to the dataset and not download it (for example, if you would like the dataset to be used as an input for an AML job) run this command instead:
+Or, if you would like to get a reference to the dataset and not download it (for example, if you would like the dataset to be used as an input for an AML job) run this command instead:
 
-#dataset = ml_client_registry.data.get(name=dataset_name, version=dataset_version)
-
+```python
+dataset = ml_client_registry.data.get(name=dataset_name, version=dataset_version)
 ```
 

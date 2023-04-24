@@ -10,6 +10,6 @@
     "dataset_version": "<CHANGE_ME_DATASET_VERSION>",
     
     "registry_name": "<CHANGE_ME_REGISTRY_NAME>",
-    "registry_location": "<CHANGE_ME_REGISTRY_LOCATION>",
+    "registry_location": "<CHANGE_ME_REGISTRY_LOCATION>"
 
 }

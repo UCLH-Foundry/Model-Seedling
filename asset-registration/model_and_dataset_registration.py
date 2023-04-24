@@ -26,5 +26,4 @@ if __name__ == '__main__':
     data_in_workspace = ml_client.data.get(name=config["dataset_name"], version=config["dataset_version"])
     data_ready_to_copy = ml_client.data._prepare_to_copy(data_in_workspace)
     ml_client_registry.data.create_or_update(data_ready_to_copy).wait()
-
     

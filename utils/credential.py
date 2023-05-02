@@ -1,4 +1,3 @@
-#!/bin/bash
 #  Copyright (c) University College London Hospitals NHS Foundation Trust
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-set -o errexit
-set -o pipefail
-set -o nounset
+import os
+from azure.identity import DefaultAzureCredential
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-MODEL_YAML="${SCRIPT_DIR}/../model.yaml" 
-
-# If no ENVIRONMENT var is set, we're local
-if [ -z "${ENVIRONMENT+x}" ]; then
-    app_name=($(cat model.yaml | grep name:))
-    export LOCAL_IMAGE_NAME=${app_name[1]}
-    echo "WERE LOCAL"
-else
-    echo "Running in CI. Expecting environment variables to be set"
-    export LOCAL_IMAGE_NAME="app"
-fi
+def get_credential():
+    is_local = os.environ.get("ENVIRONMENT") is None
+    credential = DefaultAzureCredential(exclude_managed_identity_credential=is_local)
+    return credential

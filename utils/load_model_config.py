@@ -1,4 +1,3 @@
-#!/bin/bash
 #  Copyright (c) University College London Hospitals NHS Foundation Trust
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +12,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-set -o errexit
-set -o pipefail
-set -o nounset
+import yaml
+import os
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-MODEL_YAML="${SCRIPT_DIR}/../model.yaml" 
+script_dir = os.path.dirname(__file__)
 
-# If no ENVIRONMENT var is set, we're local
-if [ -z "${ENVIRONMENT+x}" ]; then
-    app_name=($(cat model.yaml | grep name:))
-    export LOCAL_IMAGE_NAME=${app_name[1]}
-    echo "WERE LOCAL"
-else
-    echo "Running in CI. Expecting environment variables to be set"
-    export LOCAL_IMAGE_NAME="app"
-fi
+def model_config():
+    with open(f"{script_dir}/../model.yaml", "r") as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)

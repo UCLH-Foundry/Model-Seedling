@@ -13,21 +13,48 @@
 #  limitations under the License.
 
 import logging
+import pandas as pd
+from azure.ai.ml import MLClient
+from utils.sql_connection import sqlalchemy_connection
+from utils.credential import get_credential
 
-def init():
-    # TODO: Perform any initialization of the model
-    logging.info("Model initialized")
-    return {"init": "DONE"}
+models = []
+
+def init(config):
+    logging.info("Loading models")
+
+    credential = get_credential()
+    
+    # Get a handle to the registry
+    ml_client_registry = MLClient(credential=credential,
+                        registry_name=config["registry"]["name"],
+                        registry_location=config["registry"]["location"])
+
+    # loop the models in config and download them from the registry
+    for model in config["models"]:
+        model_from_registry = ml_client_registry.models.get(
+            name=model["name"], version=model["version"]
+        )
+        model["registry_path"] = model_from_registry.path,
+        models.append(model_from_registry)
 
 
-def run(model_inputs: dict = None):
+def run(config, model_inputs: dict = None):
     # TODO: Add code here that calls your model
     #       model_inputs is a dictionary containing any inputs that were passed to the model endpoint
     #       This function should return a dictionary containing the model results
     
-    logging.info("Model run started")
-    model_results = {"result": "Hello World!"}
+    connection = sqlalchemy_connection(config)
+
+    query = """SELECT top 10 [csn]
+        ,[date_of_birth]
+        ,[horizon_datetime]
+        FROM [dbo].[date_of_birth_v1]"""
+
+    df = pd.read_sql(query, connection)
+    model_results = df.to_json()
+
     logging.info("Model run completed")
-    
+
     # return model results
     return model_results

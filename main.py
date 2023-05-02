@@ -14,6 +14,15 @@
 
 import uvicorn
 from serve.internal import api
+from asset_registration.model_and_dataset_registration import register_assets
+
 
 if __name__ == "__main__":
     uvicorn.run(api.app, port=5000)
+
+def make_create_dataset():
+   # create_dataset()
+   pass
+
+def make_register_assets():
+    register_assets()

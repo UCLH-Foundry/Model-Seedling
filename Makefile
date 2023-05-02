@@ -36,7 +36,30 @@ build:  ## Build the docker image
 	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
 	&& ${MAKEFILE_DIR}/.scripts/build.sh
 
+init:
+	$(call target_title, "Installing Requirements") \
+	&& pip install -r requirements.txt
+
+
+# Data Science Steps
+create-dataset:
+	$(call target_title, "Creating dataset") \
+	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
+	&& python3 -c 'import main; main.make_create_dataset()'
+
+
+train-model:
+# TODO
+
+register-model:
+# TODO
+
+
 serve-local:  ## Serve the model locally
 	$(call target_title, "Serving locally") \
-	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
-	&& ${MAKEFILE_DIR}/.scripts/serve.sh
+	&& python3 main.py
+
+publish-assets-in-registry:  ## Push the model and dataset to the shared registry
+	$(call target_title, "Pushing Models and Datasets to registry") \
+	&& python3 -c 'import main; main.make_register_assets()'
+

@@ -1,5 +1,20 @@
 name: my-model-endpoint
 description: My model endpoint
-tags:
-    tag1: value1
-    tag2: value2
+models:
+  - name: damoo-dev-model
+    description: My lovely model
+    local_file_path: /home/damoo/repos/azureml-examples/cli/assets/model/mlflow-model
+    version: 1
+    is_mlflow: True
+datasets:
+  - name: "damo-dataset"
+    description: My cool dataset
+    local_file_path: 
+    version:
+feature_store:
+  server: sql-server-features-uclh-flowehr-app-dev.database.windows.net
+  database: sql-db-features
+registry:
+  name: aml-registry-uclh-flowehr-app-dev
+  location: uksouth
+aad_tenant: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3

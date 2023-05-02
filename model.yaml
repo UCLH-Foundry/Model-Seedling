@@ -1,20 +1,23 @@
 name: my-model-endpoint
 description: My model endpoint
+aad_tenant: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3
 models:
-  - name: damoo-dev-model
-    description: My lovely model
-    local_file_path: /home/damoo/repos/azureml-examples/cli/assets/model/mlflow-model
+  - name: _CHANGE_ME_
+    description: _CHANGE_ME_
     version: 1
     is_mlflow: True
 datasets:
-  - name: "damo-dataset"
-    description: My cool dataset
+  - name: _CHANGE_ME_
+    description: _CHANGE_ME_
     local_file_path: 
-    version:
+    version: 1
 feature_store:
-  server: sql-server-features-uclh-flowehr-app-dev.database.windows.net
+  server: sql-server-features-uclh-flowehr-prod.database.windows.net
   database: sql-db-features
 registry:
-  name: aml-registry-uclh-flowehr-app-dev
+  name: aml-registry-uclh-flowehr-prod
   location: uksouth
-aad_tenant: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3
+monitoring_store:
+  uri: https://cosmos-serve-uclhflowehrprod.documents.azure.com:443/
+  database_name: <repo-name>-state
+  container_name: _CHANGE_ME_

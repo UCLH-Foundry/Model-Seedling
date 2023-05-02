@@ -36,24 +36,44 @@ build:  ## Build the docker image
 	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
 	&& ${MAKEFILE_DIR}/.scripts/build.sh
 
+# Steps - TBC:
+
+# - init the repo [make init]
+
+# - create CSV [make create-local-dataset]
+
+# - register dataset in AML [make register-dataset]
+
+# (have a dataset, in AML)
+# - train model [make train-model-in-aml]
+#   - register model at end of training
+
+# (have a registered model in AML)
+# - test model as local API [make serve-local]
+#   - if is_local, pull model + dataset from local AML registry
+#   - else: pull from shared registry
+
+# (ready to publish + serve model)
+# - algo steward runs make publish-assets [make publish-assets-in-registry]
+# - commit code + PR to prod branch
+# deployment magic happens
+
+
+# Data Science Steps
 init:
 	$(call target_title, "Installing Requirements") \
 	&& pip install -r requirements.txt
 
-
-# Data Science Steps
-create-dataset:
+create-local-dataset:
 	$(call target_title, "Creating dataset") \
 	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
 	&& python3 -c 'import main; main.make_create_dataset()'
 
-
-train-model:
+register-dataset:
 # TODO
 
-register-model:
+train-model-in-aml:
 # TODO
-
 
 serve-local:  ## Serve the model locally
 	$(call target_title, "Serving locally") \

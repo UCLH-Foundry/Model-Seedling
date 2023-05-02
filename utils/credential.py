@@ -15,7 +15,11 @@
 import os
 from azure.identity import DefaultAzureCredential
 
+
+def is_local():
+    return os.environ.get("ENVIRONMENT") is None
+
+
 def get_credential():
-    is_local = os.environ.get("ENVIRONMENT") is None
-    credential = DefaultAzureCredential(exclude_managed_identity_credential=is_local)
+    credential = DefaultAzureCredential(exclude_managed_identity_credential=is_local())
     return credential

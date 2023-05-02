@@ -26,6 +26,7 @@ config = model_config()
 # create fastapi app
 app = FastAPI()
 
+
 @app.on_event("startup")
 async def initialize_logging_on_startup():
     initialize_logging(logging.INFO)
@@ -39,7 +40,7 @@ def root():
     return config
 
 
-@app.get("/run")
+@app.post("/run")
 def run(rawdata: dict = None):
     logging.info("Run endpoint called")
     return entrypoint.run(config, rawdata)

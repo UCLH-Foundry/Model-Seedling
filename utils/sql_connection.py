@@ -31,7 +31,7 @@ def get_connection_string(model_config):
 
 def get_db_aad_token(model_config) -> bytes:
      
-    tenant_id = model_config["aad_tenant"]
+    tenant_id = model_config["aad_tenant_id"]
     credential = get_credential()
     databaseToken = credential.get_token("https://database.windows.net/", tenant_id=tenant_id)
 

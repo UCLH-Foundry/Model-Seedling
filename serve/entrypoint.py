@@ -45,20 +45,25 @@ def init(config):
         config["monitoring_store"]["container_name"]
     )
     
-    # Get a handle to the registry
-    ml_client_registry = MLClient(credential=credential,
+    # If running locally - pull model + datasets from local AML
+    # If running in hosting - pull from shared registry
+    if is_local():
+        ml_client_registry = MLClient(credential=credential,
+                        resource_group_name=config["aml"]["resource_group_name"],
+                        subscription_id=config["subscription_id"],
+                        workspace_name=config["aml"]["workspace_name"])
+    else:
+        ml_client_registry = MLClient(credential=credential,
                         registry_name=config["registry"]["name"],
                         registry_location=config["registry"]["location"])
     
     # loop the models in config and download them from the registry
     for model in config["models"]:
-        logging.info(f'Downloading {model["name"]}, version {model["version"]}')
+        logging.info(f'Downloading model {model["name"]}, version {model["version"]}')
 
         # download the model, clearing out the old dir first
-        download_path = f'{assets_dir}/{model["name"]}/{model["version"]}'
-        if os.path.exists(download_path):
-            shutil.rmtree(download_path)
-        os.makedirs(download_path)
+        download_path = f'{assets_dir}/models/{model["name"]}/{model["version"]}'
+        ensure_path(download_path)
 
         ml_client_registry.models.download(
             name=model["name"], 
@@ -67,6 +72,21 @@ def init(config):
         )
         
         loaded_models.append(mlflow.pyfunc.load_model(f'{download_path}/{model["name"]}/mlflow-model'))
+
+    # loop the models in config and download them from the registry
+    for dataset in config["datasets"]:
+        logging.info(f'Downloading dataset {dataset["name"]}, version {dataset["version"]}')
+
+        # download the model, clearing out the old dir first
+        download_path = f'{assets_dir}/datasets/{dataset["name"]}/{dataset["version"]}'
+        ensure_path(download_path)
+
+        ds = ml_client_registry.data.get(
+            name=dataset["name"], 
+            version=dataset["version"]
+        )
+
+        print(ds)
 
 
 def run(config, user_inputs: dict = None):
@@ -102,3 +122,9 @@ def run(config, user_inputs: dict = None):
 
     # return model results
     return results
+
+
+def ensure_path(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)

@@ -24,7 +24,6 @@ MODEL_YAML="${SCRIPT_DIR}/../model.yaml"
 if [ -z "${ENVIRONMENT+x}" ]; then
     app_name=($(cat model.yaml | grep name:))
     export LOCAL_IMAGE_NAME=${app_name[1]}
-    echo "WERE LOCAL"
 else
     echo "Running in CI. Expecting environment variables to be set"
     export LOCAL_IMAGE_NAME="app"

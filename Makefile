@@ -64,16 +64,17 @@ init:
 	$(call target_title, "Installing Requirements") \
 	&& pip install -r requirements.txt
 
-create-local-dataset:
+create-local-datasets:
 	$(call target_title, "Creating dataset") \
-	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
-	&& python3 -c 'import main; main.make_create_dataset()'
+	&& python3 -c 'import main; main.make_create_datasets()'
 
-register-dataset:
-# TODO
+register-datasets-in-aml:
+	$(call target_title, "Registering datasets in AML") \
+	&& python3 -c 'import main; main.make_register_datasets_in_aml()'
 
 train-model-in-aml:
 # TODO
+
 
 serve-local:  ## Serve the model locally
 	$(call target_title, "Serving locally") \
@@ -82,4 +83,3 @@ serve-local:  ## Serve the model locally
 publish-assets-in-registry:  ## Push the model and dataset to the shared registry
 	$(call target_title, "Pushing Models and Datasets to registry") \
 	&& python3 -c 'import main; main.make_register_assets()'
-

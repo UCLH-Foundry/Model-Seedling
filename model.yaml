@@ -1,23 +1,29 @@
+# NOTE: This file is committed to the repository. It MUST NOT contain keys or secrets.
+
 name: my-model-endpoint
 description: My model endpoint
-aad_tenant: c35de074-4556-45c2-9370-650c610bfbb8
+aad_tenant_id: c35de074-4556-45c2-9370-650c610bfbb8
+subscription_id: 
 models:
   - name: _CHANGE_ME_
     description: _CHANGE_ME_
     version: 1
     is_mlflow: True
 datasets:
-  - name: _CHANGE_ME_
-    description: _CHANGE_ME_
-    local_file_path: 
+  - name: _CHANGE_ME
+    description: _CHANGE_ME
+    local_directory_path: ./local_assets/datasets/my-dataset/ # path to folder - all files inside are uploaded
     version: 1
 feature_store:
   server: sql-server-features-uclh-flowehr-prod.database.windows.net
   database: sql-db-features
+aml:
+  resource_group_name: rg-uclhtreprod-ws-<last 4 chars are workspace id from TRE portal>
+  workspace_name: ml-uclhtreprod-ws-... # get from TRE portal
 registry:
   name: aml-registry-uclh-flowehr-prod
   location: uksouth
 monitoring_store:
-  uri: https://cosmos-serve-uclhflowehrprod.documents.azure.com:443/
+  uri: https://cosmos-serve-uclhflowehrappdev.documents.azure.com:443/
   database_name: <repo-name>-state
   container_name: _CHANGE_ME_

@@ -14,15 +14,19 @@
 
 import uvicorn
 from serve.internal import api
-from asset_registration.model_and_dataset_registration import register_assets
+from asset_registration.shared_registry import register_shared_assets
+from asset_registration.local_aml import register_datasets
+from dataset_creation.create_datasets import create_datasets
 
 
 if __name__ == "__main__":
     uvicorn.run(api.app, port=5000)
 
-def make_create_dataset():
-   # create_dataset()
-   pass
+def make_create_datasets():
+    create_datasets()
+
+def make_register_datasets_in_aml():
+    register_datasets()
 
 def make_register_assets():
-    register_assets()
+    register_shared_assets()

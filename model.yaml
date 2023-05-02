@@ -1,6 +1,6 @@
 name: my-model-endpoint
 description: My model endpoint
-aad_tenant: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3
+aad_tenant: c35de074-4556-45c2-9370-650c610bfbb8
 models:
   - name: _CHANGE_ME_
     description: _CHANGE_ME_

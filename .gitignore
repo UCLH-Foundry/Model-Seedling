@@ -164,3 +164,4 @@ cython_debug/
 .csv
 serve_assets/*
 local_assets/*
+transfer_assets/*

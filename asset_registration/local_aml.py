@@ -1,7 +1,7 @@
 from azure.ai.ml import MLClient
 from azure.ai.ml.constants import AssetTypes
 from azure.ai.ml.entities import Data
-from utils.load_model_config import model_config
+from utils.config import model_config
 from utils.credential import get_credential
 
 

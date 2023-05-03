@@ -14,6 +14,7 @@
 
 import yaml
 import os
+import shutil
 
 script_dir = os.path.dirname(__file__)
 
@@ -23,3 +24,9 @@ def model_config():
             return yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+
+
+def ensure_path(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)

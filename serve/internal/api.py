@@ -17,7 +17,7 @@ from fastapi import FastAPI
 
 from serve import entrypoint
 from .azure_logging import initialize_logging, disable_unwanted_loggers
-from utils.load_model_config import model_config
+from utils.config import model_config
 
 
 logger = logging.getLogger(__name__)

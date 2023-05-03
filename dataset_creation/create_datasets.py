@@ -1,7 +1,6 @@
 import os
-import shutil
 import pandas as pd
-from utils.load_model_config import model_config
+from utils.config import model_config, ensure_path
 from utils.sql_connection import sqlalchemy_connection
 
 script_dir = os.path.dirname(__file__)
@@ -28,10 +27,3 @@ def create_datasets():
     data.to_csv(f'{dataset_path}/{dataset_name}.csv')
     print(f'Created {dataset_name} in {dataset_path}. Update your model.yaml as needed.')
     # -----
-
-
-def ensure_path(dataset_path):
-    if os.path.exists(dataset_path):
-        shutil.rmtree(dataset_path)
-    os.makedirs(dataset_path)
-

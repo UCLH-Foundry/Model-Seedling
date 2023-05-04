@@ -7,7 +7,8 @@
 		"dockerfile": "Dockerfile"
 	},
 	"mounts": [
-		"type=bind,source=/etc/pip.conf,target=/etc/pip.conf" // mount the pip.conf from the VM to get the nexus config
+		"type=bind,source=/etc/pip.conf,target=/etc/pip.conf", // mount the pip.conf from the VM to get the nexus config
+		"type=bind,source=${env:HOME}${env:USERPROFILE}/.azure,target=/home/vscode/.azure"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

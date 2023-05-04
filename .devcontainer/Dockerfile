@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/devcontainers/python:0-3.10
 # TODO: Implement debian apt sources in nexus to allow downloading of packages here.
 # For now, the VM inside the TRE has the ODBC drivers we need installed, and the 
 # pip packages can be downloaded via nexus, so there's no 'need' for this dev container
-# inside the TRE. Then you can uncomment the lines below.
+# inside the TRE.
 
 # Install ODBC Driver
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -

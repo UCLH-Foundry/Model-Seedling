@@ -12,15 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import yaml
-
-def generate_about_json():
-
-    # load model.yaml
-    with open("model.yaml", "r") as f:
-        model_endpoint = yaml.load(f, Loader=yaml.FullLoader)
+def generate_about_json(config):
 
     return {
-        "name": model_endpoint["name"],
-        "description": model_endpoint["description"]
+        "name": config["name"],
+        "description": config["description"],
+        "api_version": str(config["api_version"])
     }

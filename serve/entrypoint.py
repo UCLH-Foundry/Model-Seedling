@@ -38,8 +38,8 @@ def init(config):
     global sql_connection
     sql_connection = sqlalchemy_connection(config)
 
-    global cosmos_container
     if is_local() != True:
+        global cosmos_container
         uri = config["monitoring_store"]["uri"]
         client = CosmosClient(uri, credential=credential)
         database = client.get_database_client(config["monitoring_store"]["database_name"])
@@ -48,7 +48,7 @@ def init(config):
         )
     
     # If running locally - pull model + datasets from local AML
-    # If running in hosting - pull from shared registry
+    # If running in prod - pull from shared registry
     if is_local():
         ml_client_registry = MLClient(credential=credential,
                         resource_group_name=config["aml"]["resource_group_name"],
@@ -95,20 +95,20 @@ def init(config):
                 uri = data.path, 
                 destination = download_path,
                 datastore_operation=ml_client_registry.datastores)
+    
+    global feature_query
+    with open(f"{script_dir}/feature_inference_query.sql", "r") as stream:
+        feature_query = stream.read()
 
 
 def run(config, user_inputs: dict = None):
-    # TODO: Add code here that calls your model
-    #       model_inputs is a dictionary containing any inputs that were passed to the model endpoint
-    #       This function should return a dictionary containing the model results
+    """
+    Accepts input from the user and returns a model prediction
+    model_inputs is a dictionary containing any inputs that were passed to the model endpoint
+    """
     
-    # get feature data
-    query = """SELECT top 10 [csn]
-        ,[date_of_birth]
-        ,[horizon_datetime]
-        FROM [dbo].[date_of_birth_v1]"""
-
-    features = pd.read_sql(query, sql_connection)
+    # get feature data - query inline, or load from a file
+    features = pd.read_sql(feature_query, sql_connection, params=(user_inputs["param_from_user"]))
 
     # run prediction
     outputs = loaded_models[0].predict(pd.DataFrame.from_dict(user_inputs))
@@ -118,7 +118,7 @@ def run(config, user_inputs: dict = None):
         "id": str(uuid.uuid4()), 
         "user_inputs": user_inputs,
         "features": features.to_dict(),
-        "outputs": dict(enumerate(outputs.flatten(), 1))
+        "outputs": dict(enumerate(outputs.flatten(), 1)) # will have to modify this depending on the model output
     }
 
     # log user_inputs, features and outputs to cosmos for accuracy monitoring
@@ -130,3 +130,17 @@ def run(config, user_inputs: dict = None):
 
     # return model results
     return results
+
+
+def run_shim(user_inputs: dict = None):
+    """
+    Use this method to return a sample payload in non-prod environments, such as app-dev.
+    This will help app developers build against your model endpoint
+    """
+
+    return {
+        "id": str(uuid.uuid4()), 
+        "user_inputs": user_inputs,
+        "features": {"feature1": "value1", "feature2": "value2"},
+        "outputs": ["Shape", "Of", "Expected", "Predictions"]
+    }

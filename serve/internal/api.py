@@ -12,11 +12,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import os
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from serve import entrypoint
 from .azure_logging import initialize_logging, disable_unwanted_loggers
+from .about import generate_about_json
 from utils.config import model_config
 
 
@@ -26,21 +28,37 @@ config = model_config()
 # create fastapi app
 app = FastAPI()
 
+# if we're running in app-dev, don't init, don't connect to data or models - just return the shim
+is_app_dev = "ENVIRONMENT" in os.environ and os.environ["ENVIRONMENT"].lower() == "app-dev"
+
 
 @app.on_event("startup")
 async def initialize_logging_on_startup():
     initialize_logging(logging.INFO)
     disable_unwanted_loggers()
-    entrypoint.init(config)
+    if is_app_dev != True:
+        entrypoint.init(config)
 
 
 @app.get("/")
 def root():
     logging.info("Root endpoint called")
-    return config
+    return generate_about_json(config)
 
 
 @app.post("/run")
 def run(rawdata: dict = None):
     logging.info("Run endpoint called")
-    return entrypoint.run(config, rawdata)
+    if is_app_dev:
+        return entrypoint.run_shim(rawdata)
+    else:
+        return entrypoint.run(config, rawdata)
+
+
+@app.get("/run")
+def run(req: Request):
+    logging.info("Run endpoint called")
+    if is_app_dev:
+        return entrypoint.run_shim(req.query_params)
+    else:
+        return entrypoint.run(config, req.query_params)

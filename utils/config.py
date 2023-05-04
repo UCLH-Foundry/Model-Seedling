@@ -16,9 +16,9 @@ import yaml
 import os
 import shutil
 
-script_dir = os.path.dirname(__file__)
 
 def model_config():
+    script_dir = os.path.dirname(__file__)
     with open(f"{script_dir}/../model.yaml", "r") as stream:
         try:
             return yaml.safe_load(stream)

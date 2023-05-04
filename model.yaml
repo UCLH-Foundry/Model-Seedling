@@ -2,7 +2,8 @@
 
 name: my-model-endpoint
 description: My model endpoint
-aad_tenant_id: c35de074-4556-45c2-9370-650c610bfbb8
+api_version: 0.1
+aad_tenant_id: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3
 subscription_id: 
 models:
   - name: _CHANGE_ME_
@@ -24,6 +25,6 @@ registry:
   name: aml-registry-uclh-flowehr-prod
   location: uksouth
 monitoring_store:
-  uri: https://cosmos-serve-uclhflowehrappdev.documents.azure.com:443/
+  uri: https://cosmos-serve-uclhflowehrprod.documents.azure.com:443/ # also in os.environ["COSMOS_STATE_STORE_ENDPOINT"]
   database_name: <repo-name>-state
-  container_name: _CHANGE_ME_
+  container_name: <repo-name>

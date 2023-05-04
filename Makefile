@@ -26,6 +26,9 @@ help: ## Show this help
         | column -t -s '|'
 	@echo
 
+
+# Automation make targets -----------------------------------------------------
+
 deploy: build ## Deploy this app
 	$(call target_title, "Deploying") \
 	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
@@ -36,49 +39,30 @@ build:  ## Build the docker image
 	&& . ${MAKEFILE_DIR}/.scripts/load_env.sh \
 	&& ${MAKEFILE_DIR}/.scripts/build.sh
 
-# Steps - TBC:
 
-# - init the repo [make init]
+# Data science workflow steps -------------------------------------------------
 
-# - create CSV [make create-local-dataset]
-
-# - register dataset in AML [make register-dataset]
-
-# (have a dataset, in AML)
-# - train model [make train-model-in-aml]
-#   - register model at end of training
-
-# (have a registered model in AML)
-# - test model as local API [make serve-local]
-#   - if is_local, pull model + dataset from local AML registry
-#   - else: pull from shared registry
-
-# (ready to publish + serve model)
-# - algo steward runs make publish-assets [make publish-assets-in-registry]
-# - commit code + PR to prod branch
-# deployment magic happens
-
-
-# Data Science Steps
-init:
+init:  ## Download all dependencies
 	$(call target_title, "Installing Requirements") \
 	&& pip install -r requirements.txt
 
-create-local-datasets:
+create-local-datasets:  ## Run scripts to create local datasets for training
 	$(call target_title, "Creating dataset") \
 	&& python3 -c 'import main; main.make_create_datasets()'
 
-register-datasets-in-aml:
+register-datasets-in-aml:  ## Register local datasets in AML
 	$(call target_title, "Registering datasets in AML") \
 	&& python3 -c 'import main; main.make_register_datasets_in_aml()'
 
-train-model-in-aml:
-# TODO
+train-in-aml:  ## Run model training in AML and register a model
 
-
-serve-local:  ## Serve the model locally
+serve-local:  ## Serve the model endpoint locally for testing
 	$(call target_title, "Serving locally") \
 	&& python3 main.py
+
+serve-local-app-dev:  ## Serve the model endpoint locally to check what an app developer will see in app-dev
+	$(call target_title, "Serving locally") \
+	&& ENVIRONMENT=app-dev python3 main.py
 
 publish-assets-in-registry:  ## Push the model and dataset to the shared registry
 	$(call target_title, "Pushing Models and Datasets to registry") \

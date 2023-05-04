@@ -161,7 +161,7 @@ cython_debug/
 
 .DS_Store
 
-.csv
-serve_assets/*
-local_assets/*
-transfer_assets/*
+*.csv
+*/serve_assets/*
+*/local_assets/*
+*/transfer_assets/*

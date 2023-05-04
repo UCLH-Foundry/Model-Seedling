@@ -21,5 +21,6 @@ def is_local():
 
 
 def get_credential():
+    # if running code from the repo in the TRE, we need to exclude MSI else the identity of the VM is picked up first
     credential = DefaultAzureCredential(exclude_managed_identity_credential=is_local())
     return credential

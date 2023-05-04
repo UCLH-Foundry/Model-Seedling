@@ -18,13 +18,14 @@ from typing import Any
 import pyodbc
 import sqlalchemy
 from .credential import get_credential
+from .credential import is_local
 
 
 def get_connection_string(model_config):
     driver = "{ODBC Driver 18 for SQL Server}"
     server = model_config["feature_store"]["server"]
     database = model_config["feature_store"]["database"]
-    msi = "" if os.environ.get("ENVIRONMENT") is None else "Authentication=ActiveDirectoryMsi;"
+    msi = "" if is_local() else "Authentication=ActiveDirectoryMsi;"
     cs = f'Driver={driver};Server=tcp:{server},1433;Database={database};{msi}Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
     return cs
 
@@ -47,29 +48,27 @@ def pyodbc_connection(model_config) -> Any:
     Documentation: https://github.com/mkleehammer/pyodbc/wiki
     """
 
-    SQL_COPT_SS_ACCESS_TOKEN = 1256
-    token_struct = get_db_aad_token(model_config)
     cs = get_connection_string(model_config)
 
-    conn = pyodbc.connect(
-        cs, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
-    )
-
-    return conn
-
+    if is_local():
+        SQL_COPT_SS_ACCESS_TOKEN = 1256
+        token_struct = get_db_aad_token(model_config)
+        return pyodbc.connect(cs, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct})
+    else:
+        return pyodbc.connect(cs) 
 
 def sqlalchemy_connection(model_config) -> Any:
     """
     SQLAlchemy connection for running queries against the MSSQL feature store.
     """
-
-    SQL_COPT_SS_ACCESS_TOKEN = 1256
-    token_struct = get_db_aad_token(model_config)
     cs = get_connection_string(model_config)
-    
-    engine = sqlalchemy.create_engine(
-        f"mssql+pyodbc:///?odbc_connect={cs}",
-        connect_args={"attrs_before": {SQL_COPT_SS_ACCESS_TOKEN: token_struct}},
-    )
 
-    return engine.connect()
+    if is_local():
+        SQL_COPT_SS_ACCESS_TOKEN = 1256
+        token_struct = get_db_aad_token(model_config)
+        return sqlalchemy.create_engine(
+            f"mssql+pyodbc:///?odbc_connect={cs}",
+            connect_args={"attrs_before": {SQL_COPT_SS_ACCESS_TOKEN: token_struct}},
+        ).connect()
+    else:
+        return sqlalchemy.create_engine(f"mssql+pyodbc:///?odbc_connect={cs}").connect()

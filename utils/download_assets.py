@@ -37,12 +37,10 @@ def download_models_defined_in_config(config: dict, directory:str, ml_client_reg
                 download_path=download_path
             )
 
-            model_details.append(
-                {
-                    "name": model["name"],
-                    "version": model["version"],
-                    "local_path": download_path
-                })
+            # add the downloaded path to the object
+            model["download_path"] = download_path
+
+            model_details.append(model)
     
     return model_details
 
@@ -66,11 +64,7 @@ def download_datasets_defined_in_config(config: dict, directory:str, ml_client_r
                 destination = download_path,
                 datastore_operation=ml_client_registry.datastores)
             
-            dataset_details.append(
-                {
-                    "name": dataset["name"],
-                    "version": dataset["version"],
-                    "local_path": download_path
-                })
+            dataset["download_path"] = download_path
+            dataset_details.append(dataset)
     
     return dataset_details

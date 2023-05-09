@@ -24,7 +24,7 @@ from utils.cosmos_container import cosmos_container
 from utils.ml_client_registry import ml_client_registry
 from utils.credential import is_local
 from utils.sql_connection import sqlalchemy_engine
-from utils.load_assets import download_models_defined_in_config, download_datasets_defined_in_config
+from utils.download_assets import download_models_defined_in_config, download_datasets_defined_in_config
 
 logger = logging.getLogger(__name__)
 
@@ -34,19 +34,23 @@ is_app_dev = "ENVIRONMENT" in os.environ and os.environ["ENVIRONMENT"].lower() =
 # get config from yaml
 config = model_config()
 
-# get cosmos container for prod hosting only 
-cosmos = cosmos_container(config) if is_local() != True and is_app_dev != True else None
 
-# get AML registry client - depending on environment
-registry = ml_client_registry(config, False)
-
-# build sql connection
-sql_engine = sqlalchemy_engine(config)
 
 # only load models when not in app dev
 home_dir = os.path.expanduser('~')
 loaded_model_details, loaded_dataset_details = [], []
+registry, sql_engine, cosmos = None, None, None
 if is_app_dev != True:
+    # get cosmos container for prod hosting only 
+    cosmos = cosmos_container(config) if is_local() != True else None
+
+    # get AML registry client - depending on environment
+    registry = ml_client_registry(config, False) # TODO - reset
+
+    # build sql connection
+    sql_engine = sqlalchemy_engine(config)
+
+    # download models and datasets
     loaded_model_details = download_models_defined_in_config(config, f'{home_dir}/serve-assets', registry)
     loaded_dataset_details = download_datasets_defined_in_config(config, f'{home_dir}/serve-assets', registry)
 

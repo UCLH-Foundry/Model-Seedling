@@ -1,8 +1,8 @@
-from azure.ai.ml import MLClient
 from azure.ai.ml.constants import AssetTypes
 from azure.ai.ml.entities import Data
 from utils.config import model_config
 from utils.credential import get_credential
+from utils.ml_client_registry import ml_client_registry
 
 
 def register_datasets():
@@ -11,10 +11,7 @@ def register_datasets():
     credential = get_credential()
     
     # Get a handle to the AML workspace
-    local_aml_client = MLClient(credential=credential,
-                        resource_group_name=config["aml"]["resource_group_name"],
-                        subscription_id=config["subscription_id"],
-                        workspace_name=config["aml"]["workspace_name"])
+    local_aml_client = ml_client_registry(config, True)
     
     # loop the config and push the datasets to the local AML registry
     for dataset in config["datasets"]:
@@ -30,8 +27,8 @@ def register_datasets():
             pass
 
         dataset_to_register = Data(
-            path=dataset["local_directory_path"],
-            type=AssetTypes.URI_FOLDER,
+            path=f'{dataset["local_directory_path"]}/{dataset["file_name"]}',
+            type=AssetTypes.URI_FILE,
             description=dataset["description"],
             name=dataset["name"],
             version=str(dataset["version"]),

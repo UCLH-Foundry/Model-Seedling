@@ -45,7 +45,7 @@ class Serve(object):
         # TODO: Add any custom run-once logic here
 
         if model_details and len(model_details) > 0:
-            self.my_model = mlflow.pyfunc.load_model(f'{self.model_details[0]["local_path"]}/{self.model_details[0]["name"]}/mlflow-model')
+            self.my_model = mlflow.pyfunc.load_model(f'{self.model_details[0]["download_path"]}/{self.model_details[0]["name"]}/mlflow-model')
         
         # load the sql, ready to call for inferencing
         script_dir = os.path.dirname(__file__)

@@ -1,7 +1,7 @@
 import os
 from azure.ai.ml import MLClient
 from azure.ai.ml.constants import AssetTypes
-from azure.ai.ml.entities import Model, Data
+from azure.ai.ml.entities import Data
 from utils.config import model_config, ensure_path
 from utils.credential import get_credential
 import azure.ai.ml._artifacts._artifact_utilities as artifact_utils
@@ -40,14 +40,14 @@ def register_shared_assets():
             except Exception:
                 pass
 
-            # Download and upload model: revisit .share when connectivity is fixed
+            # TODO revisit .share when connectivity is fixed. For now, download and upload models
             # Share model. make sure the models have the same version in the local and global registries
-            local_aml_client.models.share(
-                name=model["name"],
-                version=model["version"],
-                registry_name=config["registry"]["name"], 
-                share_with_name=model["name"], 
-                share_with_version=model["version"])
+            # local_aml_client.models.share(
+            #     name=model["name"],
+            #     version=model["version"],
+            #     registry_name=config["registry"]["name"], 
+            #     share_with_name=model["name"], 
+            #     share_with_version=model["version"])
 
             download_path = ensure_path(f'{transfer_dir}/models/{model["name"]}')
             local_aml_client.models.download(

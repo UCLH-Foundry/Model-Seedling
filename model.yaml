@@ -4,27 +4,28 @@ name: my-model-endpoint
 description: My model endpoint
 api_version: 0.1
 aad_tenant_id: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3
-subscription_id: 
+subscription_id: b4af55d8-6fe9-4942-b4bd-d46aa7d4dd8d
 models:
-  - name: _CHANGE_ME_
-    description: _CHANGE_ME_
+  - name: damoo-dev-model
+    description: first pass model
     version: 1
     is_mlflow: True
-datasets:
-  - name: _CHANGE_ME
-    description: _CHANGE_ME
-    local_directory_path: ./local_assets/datasets/my-dataset/ # path to folder - all files inside are uploaded
-    version: 1
+#datasets:
+ # - name: _CHANGE_ME_
+ #   description: _CHANGE_ME_
+ #   local_directory_path: ./local_assets/datasets/my-dataset/ # path to folder containing produced dataset
+ #   file_name: my-file.csv
+ #   version: 1
 feature_store:
-  server: sql-server-features-uclh-flowehr-prod.database.windows.net
+  server: sql-server-features-uclh-flowehr-app-dev.database.windows.net
   database: sql-db-features
 aml:
-  resource_group_name: rg-uclhtreprod-ws-<last 4 chars are workspace id from TRE portal>
-  workspace_name: ml-uclhtreprod-ws-... # get from TRE portal
+  resource_group_name: _CHANGE_ME_                            # can find from the AML portal
+  workspace_name: _CHANGE_ME                                  # get from TRE portal
 registry:
-  name: aml-registry-uclh-flowehr-prod
+  name: aml-registry-uclh-flowehr-app-dev
   location: uksouth
 monitoring_store:
-  uri: https://cosmos-serve-uclhflowehrprod.documents.azure.com:443/ # also in os.environ["COSMOS_STATE_STORE_ENDPOINT"]
-  database_name: <repo-name>-state
-  container_name: <repo-name>
+  uri: https://cosmos-serve-uclhflowehrappdev.documents.azure.com:443/    # also in os.environ["COSMOS_STATE_STORE_ENDPOINT"]
+  database_name: <git-repo-name>-state
+  container_name: <git-repo-name>

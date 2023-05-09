@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from utils.config import model_config, ensure_path
-from utils.sql_connection import sqlalchemy_connection
+from utils.sql_connection import sqlalchemy_engine
 
 script_dir = os.path.dirname(__file__)
 assets_dir = f"{script_dir}/../local_assets/datasets"
@@ -10,7 +10,7 @@ assets_dir = f"{script_dir}/../local_assets/datasets"
 def create_datasets():
     
     config = model_config()
-    sql_connection = sqlalchemy_connection(config)
+    sql_connection = sqlalchemy_engine(config).connect()
 
     # repeat / refactor / remove as needed
     # -----
@@ -23,6 +23,7 @@ def create_datasets():
         ,[horizon_datetime]
         FROM [dbo].[date_of_birth_v1]"""
 
+    # TODO - with
     data = pd.read_sql(query, sql_connection)
     data.to_csv(f'{dataset_path}/{dataset_name}.csv')
     print(f'Created {dataset_name} in {dataset_path}. Update your model.yaml as needed.')

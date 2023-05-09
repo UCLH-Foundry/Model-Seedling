@@ -57,7 +57,7 @@ def pyodbc_connection(model_config) -> Any:
     else:
         return pyodbc.connect(cs) 
 
-def sqlalchemy_connection(model_config) -> Any:
+def sqlalchemy_engine(model_config) -> sqlalchemy.Engine:
     """
     SQLAlchemy connection for running queries against the MSSQL feature store.
     """
@@ -69,6 +69,6 @@ def sqlalchemy_connection(model_config) -> Any:
         return sqlalchemy.create_engine(
             f"mssql+pyodbc:///?odbc_connect={cs}",
             connect_args={"attrs_before": {SQL_COPT_SS_ACCESS_TOKEN: token_struct}},
-        ).connect()
+        )
     else:
-        return sqlalchemy.create_engine(f"mssql+pyodbc:///?odbc_connect={cs}").connect()
+        return sqlalchemy.create_engine(f"mssql+pyodbc:///?odbc_connect={cs}")

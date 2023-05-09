@@ -16,28 +16,57 @@ import os
 import logging
 from fastapi import FastAPI, Request
 
-from serve import entrypoint
+from serve.serve import Serve
 from .azure_logging import initialize_logging, disable_unwanted_loggers
 from .about import generate_about_json
 from utils.config import model_config
-
+from utils.cosmos_container import cosmos_container
+from utils.ml_client_registry import ml_client_registry
+from utils.credential import is_local
+from utils.sql_connection import sqlalchemy_engine
+from utils.load_assets import download_models_defined_in_config, download_datasets_defined_in_config
 
 logger = logging.getLogger(__name__)
+
+# if we're running in app-dev, don't init, don't connect to data or models - just return the fake
+is_app_dev = "ENVIRONMENT" in os.environ and os.environ["ENVIRONMENT"].lower() == "app-dev"
+
+# get config from yaml
 config = model_config()
+
+# get cosmos container for prod hosting only 
+cosmos = cosmos_container(config) if is_local() != True and is_app_dev != True else None
+
+# get AML registry client - depending on environment
+registry = ml_client_registry(config, False)
+
+# build sql connection
+sql_engine = sqlalchemy_engine(config)
+
+# only load models when not in app dev
+home_dir = os.path.expanduser('~')
+loaded_model_details, loaded_dataset_details = [], []
+if is_app_dev != True:
+    loaded_model_details = download_models_defined_in_config(config, f'{home_dir}/serve-assets', registry)
+    loaded_dataset_details = download_datasets_defined_in_config(config, f'{home_dir}/serve-assets', registry)
 
 # create fastapi app
 app = FastAPI()
 
-# if we're running in app-dev, don't init, don't connect to data or models - just return the shim
-is_app_dev = "ENVIRONMENT" in os.environ and os.environ["ENVIRONMENT"].lower() == "app-dev"
+# instantiate user serve code
+serve = Serve(
+    config=config,
+    sql_engine=sql_engine, 
+    cosmos_container=cosmos,
+    model_details=loaded_model_details, 
+    dataset_details=loaded_dataset_details
+)
 
 
 @app.on_event("startup")
 async def initialize_logging_on_startup():
     initialize_logging(logging.INFO)
     disable_unwanted_loggers()
-    if is_app_dev != True:
-        entrypoint.init(config)
 
 
 @app.get("/")
@@ -46,19 +75,20 @@ def root():
     return generate_about_json(config)
 
 
+@app.get("/run")
+def run_get(req: Request):
+    return run(req.query_params)
+
+
 @app.post("/run")
+def run_post(rawdata: dict = None):
+    return run(rawdata)
+
+
 def run(rawdata: dict = None):
     logging.info("Run endpoint called")
     if is_app_dev:
-        return entrypoint.run_shim(rawdata)
+        return serve.run_fake(rawdata)
     else:
-        return entrypoint.run(config, rawdata)
-
-
-@app.get("/run")
-def run(req: Request):
-    logging.info("Run endpoint called")
-    if is_app_dev:
-        return entrypoint.run_shim(req.query_params)
-    else:
-        return entrypoint.run(config, req.query_params)
+        return serve.run(rawdata)
+    

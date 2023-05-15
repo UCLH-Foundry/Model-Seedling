@@ -1,8 +1,8 @@
 name: spotlight
 channels:
   - conda-forge
-  - https://nexus-uclhtredev.uksouth.cloudapp.azure.com/repository/conda-repo/main/
-  - https://nexus-uclhtredev.uksouth.cloudapp.azure.com/repository/conda-mirror/main/
+  - https://nexus-uclhtreprod.uksouth.cloudapp.azure.com/repository/conda-repo/main/
+  - https://nexus-uclhtreprod.uksouth.cloudapp.azure.com/repository/conda-mirror/main/
 dependencies:
   - python=3.8
   - numpy

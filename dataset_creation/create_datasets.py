@@ -19,7 +19,7 @@ def create_datasets():
 
     # repeat / refactor / remove as needed
     # -----
-    dataset_name = "my-dataset"
+    dataset_name = "_CHANGE_ME_"
     dataset_path = f'{assets_dir}/{dataset_name}/'
     ensure_path(dataset_path)
 

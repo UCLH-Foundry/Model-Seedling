@@ -1,5 +1,5 @@
 from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, f1_score
 
 
 # =================================================
@@ -39,15 +39,17 @@ def train_model(X_train, y_train, X_test=None, y_test=None):
 
     # Evaluate the model
     y_train_pred = model.predict(X_train)
-    if X_test != None:
+    if X_test is not None:
         y_test_pred = model.predict(X_test)
 
     train_metrics = {'train_accuracy': accuracy_score(y_train, y_train_pred),
-                     'train_roc_auc_score': roc_auc_score(y_train, y_train_pred)}
+                     'train_roc_auc_score': roc_auc_score(y_train, y_train_pred),
+                     'train_f1_score': f1_score(y_train, y_train_pred)}
 
-    if X_test != None:
+    if X_test is not None:
         test_metrics = {'test_accuracy': accuracy_score(y_test, y_test_pred),
-                        'test_roc_auc_score': roc_auc_score(y_test, y_test_pred)}
+                        'test_roc_auc_score': roc_auc_score(y_test, y_test_pred),
+                        'test_f1_score': f1_score(y_test, y_test_pred)}
     else:
         test_metrics = {}
 

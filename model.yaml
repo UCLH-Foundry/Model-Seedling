@@ -3,29 +3,35 @@
 name: my-model-endpoint
 description: My model endpoint
 api_version: 0.1
-aad_tenant_id: 19f68eb7-7fb0-4868-bec1-d60d5765fbc3
-subscription_id: b4af55d8-6fe9-4942-b4bd-d46aa7d4dd8d
-models:
-  - name: damoo-dev-model
-    description: first pass model
-    version: 1
-    is_mlflow: True
-#datasets:
- # - name: _CHANGE_ME_
- #   description: _CHANGE_ME_
- #   local_directory_path: ./local_assets/datasets/my-dataset/ # path to folder containing produced dataset
- #   file_name: my-file.csv
- #   version: 1
+aad_tenant_id: c35de074-4556-45c2-9370-650c610bfbb8           # Tenant ID for UCLHSDE (FlowEHR prod)
+subscription_id: 4d660784-1345-403b-970a-69c67183180d         # Azure Subscription ID for UCLHSDE Subscription (FlowEHR prod)
 feature_store:
-  server: sql-server-features-uclh-flowehr-app-dev.database.windows.net
+  server: sql-server-features-uclh-flowehr-prod.database.windows.net
   database: sql-db-features
 aml:
   resource_group_name: _CHANGE_ME_                            # can find from the AML portal
   workspace_name: _CHANGE_ME                                  # get from TRE portal
+  aml_suffix: _CHANGE_ME_                                     # last 4 chars of AML workspace service - get from TRE portal (like "f0ed")
 registry:
-  name: aml-registry-uclh-flowehr-app-dev
+  name: aml-registry-uclh-flowehr-prod
   location: uksouth
 monitoring_store:
-  uri: https://cosmos-serve-uclhflowehrappdev.documents.azure.com:443/    # also in os.environ["COSMOS_STATE_STORE_ENDPOINT"]
-  database_name: <git-repo-name>-state
-  container_name: <git-repo-name>
+  uri: https://cosmos-serve-uclhflowehrprod.documents.azure.com:443/    # also in os.environ["COSMOS_STATE_STORE_ENDPOINT"]
+  database_name: <this-git-repo-name>-state
+  container_name: <this-git-repo-name>
+
+
+# Update this list to reflect the datasets you have created
+datasets:
+  - name: _CHANGE_ME_
+    description: _CHANGE_ME_
+    local_directory_path: ./local_assets/datasets/my-dataset/ # path to folder on your machine containing the dataset
+    file_name: my-file.csv
+    version: 1
+
+# Update this list to reflect the models that you have registered in AML at the end of training jobs
+models:
+  - name: _CHANGE_ME_                                         # Set the model name here when you have run training in AML and have a model
+    description: _CHANGE_ME_
+    version: 1
+    is_mlflow: True

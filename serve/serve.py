@@ -31,6 +31,11 @@ class Serve(object):
             dataset_details = []):
         """
         This method will get called once, at startup
+        config: the model.yaml configuration
+        sql_engine: SQL Alchemy engine
+        cosmos_container: Azure Cosmos SDK to get / set data in the container for this model
+        model_details: Details of all the models in the model.yaml file, including the `download_path` for each local directory
+        dataset_details: Details of all datasets in model.yaml, including the `download_path`
         """
 
         self.config = config
@@ -44,6 +49,7 @@ class Serve(object):
 
         # TODO: Add any custom run-once logic here
 
+        # EXAMPLE: Load a model into mlflow.pyfunc
         if model_details and len(model_details) > 0:
             self.my_model = mlflow.pyfunc.load_model(f'{self.model_details[0]["download_path"]}/{self.model_details[0]["name"]}/mlflow-model')
         

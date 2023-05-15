@@ -34,8 +34,6 @@ is_app_dev = "ENVIRONMENT" in os.environ and os.environ["ENVIRONMENT"].lower() =
 # get config from yaml
 config = model_config()
 
-
-
 # only load models when not in app dev
 home_dir = os.path.expanduser('~')
 loaded_model_details, loaded_dataset_details = [], []
@@ -45,7 +43,7 @@ if is_app_dev != True:
     cosmos = cosmos_container(config) if is_local() != True else None
 
     # get AML registry client - depending on environment
-    registry = ml_client_registry(config, False) # TODO - reset
+    registry = ml_client_registry(config, is_local())
 
     # build sql connection
     sql_engine = sqlalchemy_engine(config)

@@ -57,8 +57,42 @@ You'll now modify the training code, and then submit that to AML to run a traini
     - Submit a training job.
 - To execute this, run `make train-model-in-aml`
 
-You can view the running experiments, datasets and models in the AML Workspace, within the TRE. When the training has run successfully, you should now have a model. Yay!
+You can view the running experiments, datasets and models in the AML Workspace, within the TRE. When the training has run successfully, you should now have a model. 
 
-## 5. Update your serving code
+Update the `models` section in your `model.yaml` to reflect the name and version of the model you've trained.
 
+## 5. Serve the Model
+The `./serve` directory contains all the code to host the model and return predictions to the caller, via a web API (using Fast API).
 
+The `./internal` directory contains some plumbing code that:
+- Downloads all models and datasets when the web API starts
+- Connects to SQL and Cosmos databases. SQL for the feature store, and cosmos for output logging for monitoring.
+- Determines the environment the API is running in (more on that below)
+- Instantiates the user code that you will need to modify.
+
+The `./serve.py` file contains any custom code that executes on startup, and then the `run()` function executes when a user calls `http://your-api-host-name/run` - either via a `GET` request containing named query string parameters, or a `POST` request with a JSON payload.
+
+### Serve the model locally
+To test the serving code locally, run `make serve-local`. This will spin up the API on a losthost port where you can hit the endpoint via the browser to test and debug it.
+
+### Serve the model for an app developer / in the the app-dev environment
+If the `ENVIRONMENT` environment variable is `app-dev`:
+- No connections will be made to SQL or Cosmos
+- No models or datasets will be downloaded at startup
+- The `run_fake()` function will be called instead of the `run()` function. This allows you to output a static response that will mimic a real one. When this model is served in the `app-dev` environment, app developers will be able to call your model endpoint and code against it, being sure that when their app moves into production and they call the real one then the data structures will be as expected. 
+
+To test the app-dev serving locally, run `make serve-local-app-dev`.
+
+## 6. Publish Models and Datasets
+A member of the `FlowEHR Algorithm Stewards` AAD group will need to run this step, as they are the only users with access to the shared AML registry in FlowEHR - which hosts models and datasets for production serving.
+
+Run `make publish-assets-in-registry`. This command will loop through all the models and datasets in the `model.yaml` and:
+- Download them locally
+- Upload them to the AML registry in Production, with the named version
+
+If there is a clash with the name and version, the script will indicate so, and skip that model/dataset.
+
+## 7. Create a PR to App-Dev / Prod
+In order to run this code in the production or app-dev environments, you'll need to create a PR into the appropriate branch: `app-dev` or `prod`. 
+
+When the PR has been reviewed and merged, Gitea will sync the repo up to GitHub and the actions will fire to deploy the model serving code. When the serving code runs in app-dev, it will return the fake response. When it runs in production, it will download the models and datasets in the `model.yaml` file.

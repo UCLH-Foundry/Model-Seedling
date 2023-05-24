@@ -19,9 +19,4 @@ set -o nounset
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-if [ "${ENVIRONMENT}" != "local" ]; then
-    echo "\$ENVIRONMENT must be set to local in order to serve locally"
-    exit 1
-fi
-
 python3 ${SCRIPT_DIR}/../main.py

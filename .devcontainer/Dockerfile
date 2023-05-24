@@ -1,18 +1,19 @@
-FROM mcr.microsoft.com/devcontainers/anaconda:0-3
+FROM mcr.microsoft.com/devcontainers/python:0-3.10
 
-# Copy environment.yml (if found) to a temp location so we update the environment. Also
-# copy "noop.txt" so the COPY instruction does not fail if no environment.yml exists.
-COPY environment.yml* .devcontainer/noop.txt /tmp/conda-tmp/
-RUN if [ -f "/tmp/conda-tmp/environment.yml" ]; then umask 0002 && /opt/conda/bin/conda env update -n base -f /tmp/conda-tmp/environment.yml; fi \
-    && rm -rf /tmp/conda-tmp
+# TODO: Implement debian apt sources in nexus to allow downloading of packages here.
+# For now, the VM inside the TRE has the ODBC drivers we need installed, and the 
+# pip packages can be downloaded via nexus, so there's no 'need' for this dev container
+# inside the TRE.
 
-# Install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends curl gnupg lsb-release bash-completion \
-#     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+# Install ODBC Driver
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl -fsSL https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
+RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
+RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+RUN ["/bin/bash", "-c", "source ~/.bashrc"]
+RUN apt-get install -y unixodbc-dev
 
-# # Install AzCopy
-# RUN curl -L --fail -o /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopy-v10-linux" \
-#   && tar -xvzf /tmp/azcopy.tar.gz -C /tmp \
-#   && cp /tmp/azcopy_linux_amd64_*/azcopy /usr/local/bin/azcopy \
-#   && chmod +x /usr/local/bin/azcopy
+# Install AZ CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash

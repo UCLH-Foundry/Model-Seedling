@@ -12,22 +12,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import logging
-
-def init():
-    # TODO: Perform any initialization of the model
-    logging.info("Model initialized")
-    return {"init": "DONE"}
+import os
+from azure.identity import DefaultAzureCredential
 
 
-def run(model_inputs: dict = None):
-    # TODO: Add code here that calls your model
-    #       model_inputs is a dictionary containing any inputs that were passed to the model endpoint
-    #       This function should return a dictionary containing the model results
-    
-    logging.info("Model run started")
-    model_results = {"result": "Hello World!"}
-    logging.info("Model run completed")
-    
-    # return model results
-    return model_results
+def is_local():
+    return os.environ.get("ENVIRONMENT") is None
+
+
+def get_credential():
+    # if running code from the repo in the TRE, we need to exclude MSI else the identity of the VM is picked up first
+    credential = DefaultAzureCredential(exclude_managed_identity_credential=is_local())
+    return credential

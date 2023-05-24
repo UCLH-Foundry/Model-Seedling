@@ -12,10 +12,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-def generate_about_json(config):
+from .credential import get_credential
+from .credential import is_local
+from azure.cosmos import CosmosClient
 
-    return {
-        "name": config["name"],
-        "description": config["description"],
-        "api_version": str(config["api_version"])
-    }
+def cosmos_container(config):
+
+    credential = get_credential
+    uri = config["monitoring_store"]["uri"]
+    client = CosmosClient(uri, credential=credential)
+    database = client.get_database_client(config["monitoring_store"]["database_name"])
+    
+    return database.get_container_client(
+        config["monitoring_store"]["container_name"]
+    )

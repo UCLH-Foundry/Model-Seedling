@@ -12,10 +12,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-def generate_about_json(config):
+from asset_registration.shared_registry import register_shared_assets
+from asset_registration.local_aml import register_datasets
+from dataset_creation.create_datasets import create_datasets
+from model.main import run_pipeline
 
-    return {
-        "name": config["name"],
-        "description": config["description"],
-        "api_version": str(config["api_version"])
-    }
+
+def make_create_datasets():
+    create_datasets()
+
+def make_register_datasets_in_aml():
+    register_datasets()
+
+def train_model_in_aml():
+    run_pipeline()
+
+def make_register_assets():
+    register_shared_assets()

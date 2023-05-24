@@ -1,5 +1,4 @@
 #  Copyright (c) University College London Hospitals NHS Foundation Trust
-#
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
 #  You may obtain a copy of the License at
@@ -14,6 +13,7 @@
 
 import uvicorn
 from serve.internal import api
+
 
 if __name__ == "__main__":
     uvicorn.run(api.app, port=5000)

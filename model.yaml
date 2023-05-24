@@ -1,5 +1,37 @@
+# NOTE: This file is committed to the repository. It MUST NOT contain keys or secrets.
+
 name: my-model-endpoint
 description: My model endpoint
-tags:
-    tag1: value1
-    tag2: value2
+api_version: 0.1
+aad_tenant_id: _CHANGE_ME_                              # Tenant ID for UCLHSDE (FlowEHR prod)
+subscription_id: _CHANGE_ME_                            # Azure Subscription ID for UCLHSDE Subscription (FlowEHR prod)
+feature_store:
+  server: _CHANGE_ME_.database.windows.net
+  database: sql-db-features
+aml:
+  resource_group_name: _CHANGE_ME_                      # can find from the AML portal
+  workspace_name: _CHANGE_ME                            # get from TRE portal
+  aml_suffix: _CHANGE_ME_                               # last 4 chars of AML workspace service - get from TRE portal (like "f0ed")
+registry:
+  name: aml-registry-uclh-flowehr-prod
+  location: uksouth
+monitoring_store:
+  uri: https://_CHANGE_ME_.documents.azure.com:443/     # also in os.environ["COSMOS_STATE_STORE_ENDPOINT"]
+  database_name: _CHANGE_ME_-state                      # should be <this-git-repo-name>-state, like los-predictor-state
+  container_name: _CHANGE_ME                            # should be <this-git-repo-name>
+
+
+# Update this list to reflect the datasets you have created
+datasets:
+  - name: _CHANGE_ME_
+    description: _CHANGE_ME_
+    local_directory_path: ./local_assets/datasets/my-dataset/ # path to folder on your machine containing the dataset
+    file_name: my-file.csv
+    version: 1
+
+# Update this list to reflect the models that you have registered in AML at the end of training jobs
+models:
+  - name: _CHANGE_ME_                                         # Set the model name here when you have run training in AML and have a model
+    description: _CHANGE_ME_
+    version: 1
+    is_mlflow: True

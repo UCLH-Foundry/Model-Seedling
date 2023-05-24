@@ -160,3 +160,8 @@ cython_debug/
 #.idea/
 
 .DS_Store
+
+*.csv
+serve_assets/*
+local_assets/*
+transfer_assets/*

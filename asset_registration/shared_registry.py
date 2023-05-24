@@ -1,3 +1,17 @@
+#  Copyright (c) University College London Hospitals NHS Foundation Trust
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 import os
 from azure.ai.ml.constants import AssetTypes
 from azure.ai.ml.entities import Data
@@ -38,6 +52,7 @@ def register_shared_assets():
                 print(f'Model {model["name"]} with version {model["version"]} is already registered. Please increment the version to register a new one. Skipping...')
                 continue
         except Exception:
+            # If we're here then the model doesn't already exist - we continue as planed
             pass
 
         # TODO revisit .share() when connectivity is fixed. For now, download and upload models
@@ -70,6 +85,7 @@ def register_shared_assets():
                 print(f'Dataset {dataset["name"]} with version {dataset["version"]} is already registered. Please increment the version to register again. Skipping...')
                 continue                
         except Exception:
+            # We land here if the dataset doesn't exist. This is ok.
             pass
 
         dataset_to_register = Data(

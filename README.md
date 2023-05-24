@@ -62,15 +62,15 @@ You can view the running experiments, datasets and models in the AML Workspace, 
 Update the `models` section in your `model.yaml` to reflect the name and version of the model you've trained.
 
 ## 5. Serve the Model
-The `./serve` directory contains all the code to host the model and return predictions to the caller, via a web API (using Fast API).
+The `./serve` directory contains all the code to host the model and return predictions to the caller, via a web API (using FastAPI).
 
-The `./internal` directory contains some plumbing code that:
+The `./serve.py` file contains any custom code that executes on startup, and then the `run()` function executes when a user calls `http://your-api-host-name/run` - either via a `GET` request containing named query string parameters, or a `POST` request with a JSON payload. You will need to edit `./serve.py`.
+
+The `./internal` directory contains some plumbing code. It's not recommended to modify this code unless necessary. It:
 - Downloads all models and datasets when the web API starts
 - Connects to SQL and Cosmos databases. SQL for the feature store, and cosmos for output logging for monitoring.
 - Determines the environment the API is running in (more on that below)
 - Instantiates the user code that you will need to modify.
-
-The `./serve.py` file contains any custom code that executes on startup, and then the `run()` function executes when a user calls `http://your-api-host-name/run` - either via a `GET` request containing named query string parameters, or a `POST` request with a JSON payload.
 
 ### Serve the model locally
 To test the serving code locally, run `make serve-local`. This will spin up the API on a losthost port where you can hit the endpoint via the browser to test and debug it.

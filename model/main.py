@@ -1,32 +1,35 @@
-from azure.identity import InteractiveBrowserCredential, DefaultAzureCredential
-from azure.ai.ml import MLClient, command, Input, Output, dsl
-from azure.ai.ml.entities import Environment, Data
-from azure.ai.ml.constants import AssetTypes
+#  Copyright (c) University College London Hospitals NHS Foundation Trust
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+from azure.ai.ml import command, Input, Output, dsl
+from azure.ai.ml.entities import Environment
 from utils.config import model_config
-from utils.credential import get_credential
 from utils.ml_client_registry import ml_client_registry
 import os
 
-# TODO: refactor. lots.
 def run_pipeline():
 
     config = model_config()
-    credential = get_credential()
     script_dir = os.path.dirname(__file__)
     compute_instance = f'cp-{config["aml"]["aml_suffix"]}'
 
-    print(compute_instance)
-    exit()
-
-    ml_client = ml_client_registry(congig, True)
+    ml_client = ml_client_registry(config, True)
 
     # get a reference to the dataset
     los_data = ml_client.data.get(name=config["datasets"][0]["name"], version=config["datasets"][0]["version"])
 
-    # the environment that runs the job
-    # could abstract this out; the image below is an AML image on the local docker hub
-    # will use the environment we specify to do the work
-    # can see in the web interface under environments>custom (not curated)
+    # the AML 'environment' (conda + docker config) that runs the job
     pipeline_job_env = Environment(
         name = "Default Training Environment",
         description="TRE AML Training Environment",
@@ -39,7 +42,7 @@ def run_pipeline():
     # now register the environment
     ml_client.environments.create_or_update(environment=pipeline_job_env)
 
-    # in aml this 'thing' is called a component but here called a command
+    # in aml this is called a component but here called a command
     # the strings below are placeholders and the 'command' then substitutes in the actual args
     # which will come later
     # inputs include data and a name for the model
@@ -66,7 +69,6 @@ def run_pipeline():
     )
 
     # this decorator sets stuff up
-    # train_job is like a little make fle
     # using the train_model_comp 'command' that we set up before
     @dsl.pipeline(
         compute=compute_instance,
@@ -91,4 +93,3 @@ def run_pipeline():
 
     # GO GO GO!
     ml_client.jobs.create_or_update(pipeline, experiment_name="_CHANGE_ME_")
-    

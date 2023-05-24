@@ -93,4 +93,3 @@ def run(rawdata: dict = None):
         return serve.run_fake(rawdata)
     else:
         return serve.run(rawdata)
-    
